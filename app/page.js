@@ -1,14 +1,5 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import UploadPDF from "./upload";
+import UploadPage from "./uploadPage";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <UploadPDF />
-      </main>
-      <footer className={styles.footer}>test</footer>
-    </div>
-  );
+export default function Page() {
+  return <UploadPage />;
 }

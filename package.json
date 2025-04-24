@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
     "formidable": "^3.5.4",
     "next": "15.3.1",
     "react": "^19.0.0",
