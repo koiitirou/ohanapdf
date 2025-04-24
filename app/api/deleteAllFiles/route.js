@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const credentialsPath = process.env.GCS_KEY_PATH;
+    const credentialsPath = process.env.GCS_CREDENTIALS_JSON;
     const credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf8"));
 
     const storage = new Storage({
