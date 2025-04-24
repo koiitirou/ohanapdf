@@ -1,6 +1,7 @@
+// app/api/showFile/route.js
 import { Storage } from "@google-cloud/storage";
-import fs from "fs";
 import { NextResponse } from "next/server";
+import { getGCSClient } from "../utils/gcsClient";
 
 export async function GET(request) {
   try {
@@ -14,14 +15,7 @@ export async function GET(request) {
       );
     }
 
-    const credentialsPath = process.env.GCS_CREDENTIALS_JSON;
-    const credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf8"));
-
-    const storage = new Storage({
-      projectId: process.env.GCS_PROJECT_ID,
-      credentials: credentials,
-    });
-
+    const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
     const file = bucket.file(`upload/${filename}`);
 
