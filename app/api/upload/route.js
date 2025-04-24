@@ -16,6 +16,7 @@ export async function POST(request) {
 
     const credentialsPath = process.env.GCS_CREDENTIALS_JSON;
     const credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf8"));
+    console.log(credentials);
 
     const storage = new Storage({
       projectId: process.env.GCS_PROJECT_ID,
