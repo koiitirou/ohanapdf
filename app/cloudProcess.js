@@ -3,12 +3,16 @@
 
 import React, { useState } from "react";
 // ★★★ CSS Modules をインポート ★★★
-import styles from "./CloudProcess.module.css";
+import styles from "./CloudProcess.module.css"; // CSSモジュールをインポート
 
 const CloudProcess = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [txtFile, setTxtFile] = useState(null);
   const [pastedText, setPastedText] = useState("");
+  // ★★★ 追加: option1 と option2 の state を追加 ★★★
+  const [option1Text, setOption1Text] = useState("");
+  const [option2Text, setOption2Text] = useState("");
+  // --- ここまで追加 ---
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [resultInfo, setResultInfo] = useState(null);
@@ -26,16 +30,26 @@ const CloudProcess = () => {
   const handleTxtChange = (event) => {
     setMessage("");
     setResultInfo(null);
-    setPastedText("");
+    setPastedText(""); // TXTファイル選択時は貼り付けテキストをクリア
     setTxtFile(event.target.files[0]);
   };
 
   const handlePasteChange = (event) => {
     setMessage("");
     setResultInfo(null);
-    setTxtFile(null);
+    setTxtFile(null); // 貼り付け時はTXTファイル選択をクリア
     setPastedText(event.target.value);
   };
+
+  // ★★★ 追加: option1 と option2 のハンドラーを追加 ★★★
+  const handleOption1Change = (event) => {
+    setOption1Text(event.target.value);
+  };
+
+  const handleOption2Change = (event) => {
+    setOption2Text(event.target.value);
+  };
+  // --- ここまで追加 ---
 
   const handleSubmitToCloudRun = async () => {
     if (!pdfFile) {
@@ -72,6 +86,14 @@ const CloudProcess = () => {
       formData.append("textContent", pastedText);
       console.log("Appending pastedText:", pastedText.substring(0, 50) + "...");
     }
+
+    // ★★★ 追加: option1 と option2 のテキストを FormData に追加 ★★★
+    // 空文字列でも送信するようにします（バックエンドで空かどうかを判定）
+    formData.append("option1Text", option1Text);
+    formData.append("option2Text", option2Text);
+    console.log("Appending option1Text:", option1Text);
+    console.log("Appending option2Text:", option2Text);
+    // --- ここまで追加 ---
 
     try {
       const response = await fetch(cloudRunUrl, {
@@ -137,6 +159,10 @@ const CloudProcess = () => {
     setPdfFile(null);
     setTxtFile(null);
     setPastedText("");
+    // ★★★ 追加: option1 と option2 もクリア ★★★
+    setOption1Text("");
+    setOption2Text("");
+    // --- ここまで追加 ---
     const pdfInput = document.getElementById("pdfFileCloudRun");
     if (pdfInput) pdfInput.value = "";
     const txtInput = document.getElementById("txtFileCloudRun");
@@ -152,7 +178,6 @@ const CloudProcess = () => {
     )}`;
   };
 
-  // ★★★ messageに応じて適用するクラス名を動的に決定 ★★★
   const getMessageClass = () => {
     if (uploading) return styles.messageInfo;
     if (message.startsWith("エラー")) return styles.messageError;
@@ -221,6 +246,52 @@ const CloudProcess = () => {
           </div>
         </div>
       </div>
+      {/* ★★★ 修正: Option 1 テキスト入力 - クラス名を追加 ★★★ */}
+      <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>
+        {" "}
+        {/* inputGroup と optionalInputGroup を両方適用 */}
+        <label
+          htmlFor="option1Text"
+          className={`${styles.label} ${styles.optionalLabel}`}
+        >
+          {" "}
+          {/* label と optionalLabel を両方適用 */}
+          キーワード1 (Option 1):
+        </label>
+        <input
+          type="text"
+          id="option1Text"
+          value={option1Text}
+          onChange={handleOption1Change}
+          disabled={uploading}
+          placeholder="検索したいキーワード1を入力 (任意)"
+          className={styles.input} // inputは既存のスタイルをそのまま使うか、必要なら新しいクラスを追加
+        />
+      </div>
+      {/* --- ここまで修正 --- */}
+      {/* ★★★ 修正: Option 2 テキスト入力 - クラス名を追加 ★★★ */}
+      <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>
+        {" "}
+        {/* inputGroup と optionalInputGroup を両方適用 */}
+        <label
+          htmlFor="option2Text"
+          className={`${styles.label} ${styles.optionalLabel}`}
+        >
+          {" "}
+          {/* label と optionalLabel を両方適用 */}
+          キーワード2 (Option 2):
+        </label>
+        <input
+          type="text"
+          id="option2Text"
+          value={option2Text}
+          onChange={handleOption2Change}
+          disabled={uploading}
+          placeholder="検索したいキーワード2を入力 (任意)"
+          className={styles.input} // inputは既存のスタイルをそのまま使うか、必要なら新しいクラスを追加
+        />
+      </div>
+      {/* --- ここまで修正 --- */}
       {/* ★★★ ボタンにクラス名を適用 ★★★ */}
       <button
         onClick={handleSubmitToCloudRun}

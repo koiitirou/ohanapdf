@@ -61,6 +61,8 @@
 
 .textInputOption {
   /* TXTファイル選択とテキスト貼り付けのグループ */
+  /* inputGroup内の要素なので、inputGroupのスタイルがベースになる */
+  /* 必要であれば、さらにスタイルを追加 */
 }
 
 .orSeparator {
@@ -100,6 +102,7 @@
   border-radius: 4px;
   font-size: 0.9em;
   word-break: break-word; /* 長い単語を折り返す */
+  text-align: center; /* メッセージを中央寄せ (追加) */
 }
 
 .messageSuccess {
@@ -121,6 +124,24 @@
   border: 1px solid #b8daff;
 }
 
+/* ★★★ 追加: オプショナルな入力グループ用のスタイル ★★★ */
+.optionalInputGroup {
+  /* inputGroupのスタイルを継承しつつ上書き・追加 */
+  background-color: #f0f0f0; /* 少し濃いめの背景色で区別 */
+  border-style: dashed; /* 破線ボーダー */
+  border-color: #bbb; /* 少し濃いめのボーダー色 */
+  /* paddingやmarginはinputGroupと同じか、必要なら調整 */
+}
+
+/* ★★★ 追加: オプショナルな入力のラベル用のスタイル ★★★ */
+.optionalLabel {
+  /* labelのスタイルを継承しつつ上書き・追加 */
+  font-size: 0.9em; /* 少し小さいフォントサイズ */
+  color: #666; /* 少し薄い文字色 */
+  font-weight: normal; /* 標準の太さ */
+}
+/* --- ここまで追加 --- */
+
 /* 結果表示部分のスタイル（必要に応じてコメント解除して使う） */
 /* .resultInfo {
       margin-top: 20px;
@@ -129,7 +150,7 @@
       font-size: 0.9em;
       color: #555;
   }
-  
+
   .resultInfo code {
       background-color: #f0f0f0;
       padding: 2px 4px;
