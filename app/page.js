@@ -1,5 +1,5 @@
-import UploadPage from "./uploadPage";
-
+// import UploadPage from "./uploadPage";
+import CloudProcess from "./cloudProcess";
 export default function Page() {
-  return <UploadPage />;
+  return <CloudProcess />;
 }
