@@ -115,7 +115,9 @@ const CloudProcess = () => {
             data.downloadUrl
           );
           window.open(data.downloadUrl, "_blank");
-          setMessage("処理完了。使用した一時ファイルは自動的に削除されます。");
+          setMessage(
+            "セキュリティで保護されたプロセスにより処理が完了しました。一時データは安全に削除されます。"
+          );
         } else {
           setMessage(
             "処理は完了しましたが、ダウンロードが提供されませんでした。"
