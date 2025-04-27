@@ -2,98 +2,75 @@
 "use client";
 
 import React, { useState } from "react";
-// ★★★ CSS Modules をインポート ★★★
 import styles from "./CloudProcess.module.css"; // CSSモジュールをインポート
 
 const CloudProcess = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [txtFile, setTxtFile] = useState(null);
   const [pastedText, setPastedText] = useState("");
-  // ★★★ 追加: option1 と option2 の state を追加 ★★★
-  const [option1Text, setOption1Text] = useState("");
-  const [option2Text, setOption2Text] = useState("");
-  // --- ここまで追加 ---
+  // ★ option1Text, option2Text state は削除
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [resultInfo, setResultInfo] = useState(null);
+  // ★ excelData state は削除
 
-  // サービスの HTTPS エンドポイント URL
   const cloudRunUrl =
     "https://pdf-processor-242078138933.asia-northeast2.run.app";
 
   const handlePdfChange = (event) => {
     setMessage("");
     setResultInfo(null);
+    // ★ excelData のクリアは削除
     setPdfFile(event.target.files[0]);
   };
 
   const handleTxtChange = (event) => {
     setMessage("");
     setResultInfo(null);
-    setPastedText(""); // TXTファイル選択時は貼り付けテキストをクリア
+    // ★ excelData のクリアは削除
+    setPastedText("");
     setTxtFile(event.target.files[0]);
   };
 
   const handlePasteChange = (event) => {
     setMessage("");
     setResultInfo(null);
-    setTxtFile(null); // 貼り付け時はTXTファイル選択をクリア
+    // ★ excelData のクリアは削除
+    setTxtFile(null);
     setPastedText(event.target.value);
   };
 
-  // ★★★ 追加: option1 と option2 のハンドラーを追加 ★★★
-  const handleOption1Change = (event) => {
-    setOption1Text(event.target.value);
-  };
-
-  const handleOption2Change = (event) => {
-    setOption2Text(event.target.value);
-  };
-  // --- ここまで追加 ---
+  // ★ option1, option2 のハンドラーは削除
 
   const handleSubmitToCloudRun = async () => {
     if (!pdfFile) {
       setMessage("PDFファイルを選択してください。");
       return;
     }
-
     if (!txtFile && pastedText === "") {
       setMessage(
         "TXTファイルをアップロードするか、テキストを直接貼り付けてください。"
       );
       return;
     }
-
     if (cloudRunUrl === "YOUR_CLOUD_RUN_SERVICE_URL") {
-      setMessage(
-        "エラー: サービスの URL が設定されていません。コードを更新してください。"
-      );
-      setUploading(false);
+      setMessage("エラー: サービスの URL が設定されていません。");
       return;
     }
 
     setUploading(true);
     setMessage("データを処理中...");
     setResultInfo(null);
+    // ★ excelData のクリアは削除
 
     const formData = new FormData();
     formData.append("pdfFile", pdfFile);
-
     if (txtFile) {
       formData.append("txtFile", txtFile);
-      console.log("Appending txtFile:", txtFile.name);
     } else if (pastedText !== "") {
       formData.append("textContent", pastedText);
-      console.log("Appending pastedText:", pastedText.substring(0, 50) + "...");
     }
-
-    // ★★★ 追加: option1 と option2 のテキストを FormData に追加 ★★★
-    // 空文字列でも送信するようにします（バックエンドで空かどうかを判定）
-    formData.append("option1Text", option1Text);
-    formData.append("option2Text", option2Text);
-    console.log("Appending option1Text:", option1Text);
-    console.log("Appending option2Text:", option2Text);
-    // --- ここまで追加 ---
+    // ★ option1Text, option2Text の追加は削除
 
     try {
       const response = await fetch(cloudRunUrl, {
@@ -103,55 +80,48 @@ const CloudProcess = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(
-          "処理が完了しました。保存されました。ダウンロードを試行します..."
-        );
+        setMessage("処理完了。ダウンロードを開始します..."); // メッセージ変更
         setResultInfo(data);
+        // ★ excelData のセットは削除
         console.log("Cloud Run Success:", data);
 
         if (data && data.downloadUrl) {
-          console.log(
-            "Download URL received, attempting download:",
-            data.downloadUrl
-          );
+          console.log("Download URL received:", data.downloadUrl);
           window.open(data.downloadUrl, "_blank");
-          setMessage(
-            "セキュリティで保護されたプロセスにより処理が完了しました。一時データは安全に削除されます。"
-          );
+          setMessage("処理が完了しました。ダウンロードが開始されます。"); // 元のメッセージに近いもの
         } else {
           setMessage(
-            "処理は完了しましたが、ダウンロードが提供されませんでした。"
+            "処理は完了しましたが、ダウンロードリンクが提供されませんでした。"
           );
         }
       } else {
+        // (エラーハンドリング内で excelData クリア削除)
         try {
           const errorData = await response.json();
-          const errorMessage =
-            errorData.error ||
-            `処理に失敗しました (Status: ${response.status})`;
-          const details = errorData.details || "";
           setMessage(
-            `エラー: ${errorMessage} ${details ? `(${details})` : ""}`
+            `エラー: ${
+              errorData.error ||
+              `処理に失敗しました (Status: ${response.status})`
+            } ${errorData.details ? `(${errorData.details})` : ""}`
           );
           console.error("Cloud Run Error:", errorData);
-          setResultInfo(null);
         } catch (jsonError) {
-          const errorMessage = `処理先から予期しない応答がありました (Status: ${response.status})`;
           setMessage(
-            `エラー: ${errorMessage}。応答形式が不正です。ログを確認してください。`
+            `エラー: 処理先から予期しない応答 (Status: ${response.status})。`
           );
           console.error(
             "Cloud Run Error: Unexpected response format.",
             response,
             jsonError
           );
-          setResultInfo(null);
         }
+        setResultInfo(null);
       }
     } catch (error) {
       setMessage(`送信中にエラーが発生しました: ${error.message}`);
       console.error("Fetch Error:", error);
       setResultInfo(null);
+      // ★ excelData のクリアは削除
     } finally {
       setUploading(false);
     }
@@ -161,16 +131,14 @@ const CloudProcess = () => {
     setPdfFile(null);
     setTxtFile(null);
     setPastedText("");
-    // ★★★ 追加: option1 と option2 もクリア ★★★
-    setOption1Text("");
-    setOption2Text("");
-    // --- ここまで追加 ---
+    // ★ option1, option2 のクリアは削除
     const pdfInput = document.getElementById("pdfFileCloudRun");
     if (pdfInput) pdfInput.value = "";
     const txtInput = document.getElementById("txtFileCloudRun");
     if (txtInput) txtInput.value = "";
     setMessage("");
     setResultInfo(null);
+    // ★ excelData のクリアは削除
   };
 
   const getGcsConsoleUrl = (bucket, object) => {
@@ -179,42 +147,38 @@ const CloudProcess = () => {
       object
     )}`;
   };
-
   const getMessageClass = () => {
     if (uploading) return styles.messageInfo;
     if (message.startsWith("エラー")) return styles.messageError;
     if (message) return styles.messageSuccess;
-    return ""; // メッセージがない場合は何もクラスを適用しない
+    return "";
   };
 
+  // ★ renderExcelTable 関数は削除
+
   return (
-    // ★★★ コンテナにクラス名を適用 ★★★
     <div className={styles.container}>
-      <h2>PDF & テキスト処理</h2> {/* タイトル更新 */}
-      {/* ★★★ 各入力グループにクラス名を適用 ★★★ */}
+      <h2>PDF & テキスト処理</h2>
+      {/* PDF Input */}
       <div className={styles.inputGroup}>
-        {/* ★★★ ラベルにクラス名を適用 ★★★ */}
         <label htmlFor="pdfFileCloudRun" className={styles.label}>
           PDFファイルを選択:
         </label>
-        {/* ★★★ input にクラス名を適用 ★★★ */}
         <input
           type="file"
           id="pdfFileCloudRun"
           accept="application/pdf"
           onChange={handlePdfChange}
           disabled={uploading}
-          className={styles.input} // input フィールドにスタイル適用
+          className={styles.input}
         />
       </div>
-      {/* ★★★ TXTファイルアップロード または テキスト貼り付け グループ ★★★ */}
+      {/* TXT Input / Paste */}
       <div className={styles.inputGroup}>
         <label htmlFor="txtFileInput" className={styles.label}>
           テキスト入力 (ファイル または 貼り付け):
         </label>
         <div id="txtFileInput" className={styles.textInputOption}>
-          {" "}
-          {/* オプションを囲むdiv */}
           <div>
             <label htmlFor="txtFileCloudRun" className={styles.label}>
               TXTファイルを選択:
@@ -225,16 +189,14 @@ const CloudProcess = () => {
               accept="text/plain"
               onChange={handleTxtChange}
               disabled={uploading || pastedText !== ""}
-              className={styles.input} // input フィールドにスタイル適用
+              className={styles.input}
             />
           </div>
-          {/* ★★★ 区切り文字にクラス名を適用 ★★★ */}
           <p className={styles.orSeparator}>- または -</p>
           <div>
             <label htmlFor="pastedText" className={styles.label}>
               テキストを直接貼り付け:
             </label>
-            {/* ★★★ textarea にクラス名を適用 ★★★ */}
             <textarea
               id="pastedText"
               rows="5"
@@ -243,76 +205,45 @@ const CloudProcess = () => {
               onChange={handlePasteChange}
               disabled={uploading || txtFile !== null}
               placeholder="ここにテキストを貼り付けてください"
-              className={styles.textarea} // textarea フィールドにスタイル適用
+              className={styles.textarea}
             />
           </div>
         </div>
       </div>
-      {/* ★★★ 修正: Option 1 テキスト入力 - クラス名を追加 ★★★ */}
-      <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>
-        {" "}
-        {/* inputGroup と optionalInputGroup を両方適用 */}
-        <label
-          htmlFor="option1Text"
-          className={`${styles.label} ${styles.optionalLabel}`}
-        >
-          {" "}
-          {/* label と optionalLabel を両方適用 */}
-          キーワード1 (Option 1):
-        </label>
-        <input
-          type="text"
-          id="option1Text"
-          value={option1Text}
-          onChange={handleOption1Change}
-          disabled={uploading}
-          placeholder="検索したいキーワード1を入力 (任意)"
-          className={styles.input} // inputは既存のスタイルをそのまま使うか、必要なら新しいクラスを追加
-        />
-      </div>
-      {/* --- ここまで修正 --- */}
-      {/* ★★★ 修正: Option 2 テキスト入力 - クラス名を追加 ★★★ */}
-      <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>
-        {" "}
-        {/* inputGroup と optionalInputGroup を両方適用 */}
-        <label
-          htmlFor="option2Text"
-          className={`${styles.label} ${styles.optionalLabel}`}
-        >
-          {" "}
-          {/* label と optionalLabel を両方適用 */}
-          キーワード2 (Option 2):
-        </label>
-        <input
-          type="text"
-          id="option2Text"
-          value={option2Text}
-          onChange={handleOption2Change}
-          disabled={uploading}
-          placeholder="検索したいキーワード2を入力 (任意)"
-          className={styles.input} // inputは既存のスタイルをそのまま使うか、必要なら新しいクラスを追加
-        />
-      </div>
-      {/* --- ここまで修正 --- */}
-      {/* ★★★ ボタンにクラス名を適用 ★★★ */}
+      {/* ★ Option Inputs は削除 */}
+
+      {/* Submit Button */}
       <button
         onClick={handleSubmitToCloudRun}
         disabled={uploading || !pdfFile || (!txtFile && pastedText === "")}
-        className={styles.button} // ボタンにスタイル適用
+        className={styles.button}
       >
         {uploading ? "処理中..." : "処理して保存"}
       </button>
-      {/* メッセージ表示部分 */}
+
+      {/* Message Display */}
       {message && (
-        // ★★★ メッセージのスタイルをCSS Modulesで管理 ★★★
         <p className={`${styles.message} ${getMessageClass()}`}>{message}</p>
       )}
-      {/* 結果表示部分は現在コメントアウトされていますが、スタイルを追加する場合もCSS Modulesを使います */}
-      {/* {resultInfo && resultInfo.bucket && resultInfo.object && (
+
+      {/* ★ Excel Table Display は削除 */}
+
+      {/* GCS リンク表示 (変更なし) */}
+      {resultInfo && resultInfo.bucket && resultInfo.object && (
         <div className={styles.resultInfo}>
-          ...結果表示の内容...
+          <p>
+            結果は Cloud Storage に保存されました:
+            <a
+              href={getGcsConsoleUrl(resultInfo.bucket, resultInfo.object)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+            >
+              gs://{resultInfo.bucket}/{resultInfo.object}
+            </a>
+          </p>
         </div>
-      )} */}
+      )}
     </div>
   );
 };
