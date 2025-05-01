@@ -61,7 +61,7 @@ const CloudProcess = () => {
     }
 
     setUploading(true);
-    setMessage("ファイル処理とExcel作成中..."); // メッセージ更新
+    setMessage("ファイル処理中..."); // メッセージ更新
 
     const formData = new FormData();
     formData.append("pdfFile", pdfFile);
