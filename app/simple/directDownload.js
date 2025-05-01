@@ -104,7 +104,7 @@ const CloudProcess = () => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        setMessage("全処理完了。ZIPファイルのダウンロードを開始しました。");
+        setMessage("処理完了。ZIPファイルのダウンロードを開始しました。");
       } else {
         // エラー処理 (変更なし)
         try {
@@ -219,7 +219,7 @@ const CloudProcess = () => {
         disabled={uploading || !pdfFile || (!txtFile && pastedText === "")}
         className={styles.button}
       >
-        {uploading ? "全処理実行中..." : "全処理を実行してZIPダウンロード"}
+        {uploading ? "処理実行中..." : "処理を実行してZIPダウンロード"}
       </button>
       {message && (
         <p className={`${styles.message} ${getMessageClass()}`}>{message}</p>
