@@ -18,8 +18,7 @@ const CloudProcess = () => {
   const [resultInfo, setResultInfo] = useState(null);
 
   // サービスの HTTPS エンドポイント URL
-  const cloudRunUrl =
-    "https://pdf-processor-242078138933.asia-northeast2.run.app";
+  const cloudRunUrl = "https://full-242078138933.us-central1.run.app";
 
   const handlePdfChange = (event) => {
     setMessage("");

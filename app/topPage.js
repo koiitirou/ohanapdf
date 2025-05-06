@@ -34,7 +34,9 @@ const TopPage = () => {
           <li>
             {/* フル機能版 (GCS経由) へのリンク */}
             <Link href="/full" className={styles.link}>
-              <h2>並び替え（Excelあり） &rarr;</h2>
+              <h2 style={{ color: "grey", fontSize: "1em" }}>
+                並び替え（Excelあり） &rarr;
+              </h2>
               {/* <p>
                 PDFとTXTを処理し、全結果（縦横PDF、分割PDF、Excel）を含むZIPをCloud
                 Storage経由でダウンロードします。
