@@ -138,9 +138,7 @@ const PdfProcess = () => {
         disabled={uploading || !pdfFile}
         className={styles.button}
       >
-        {uploading
-          ? "フィルタリング中..."
-          : "最古日でPDFをフィルタリングしてダウンロード"}
+        {uploading ? "フィルタリング中..." : "最古日でPDFをフィルタリング"}
       </button>
       {message && (
         <p className={`${styles.message} ${getMessageClass()}`}>{message}</p>
