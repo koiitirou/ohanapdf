@@ -1,5 +1,5 @@
 // import UploadPage from "./uploadPage";
-import TopPage from "./topPage";
+import PdfProcess from "./pdfProcess";
 export default function Page() {
-  return <TopPage />;
+  return <PdfProcess />;
 }

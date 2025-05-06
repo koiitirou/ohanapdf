@@ -1,0 +1,45 @@
+/* app/components/AppBar.module.css */
+.appBar {
+  background-color: #ffffff; /* 背景色 */
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb; /* 下線 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.container {
+  max-width: 1200px; /* コンテンツ幅 */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between; /* ロゴとナビゲーションを両端に */
+  align-items: center;
+}
+
+.logoLink {
+  text-decoration: none;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937; /* ロゴの色 */
+  margin: 0;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #4b5563; /* リンクの色 */
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.navLink:hover {
+  background-color: #f3f4f6; /* ホバー時の背景色 */
+  color: #1f2937;
+}
+
+/* 他のナビゲーションリンクを追加する場合のスタイル例 */
+/* .navLink + .navLink {
+    margin-left: 1rem;
+  } */
