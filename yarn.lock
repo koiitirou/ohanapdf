@@ -129,6 +129,13 @@
     teeny-request "^9.0.0"
     uuid "^8.0.0"
 
+"@google-cloud/vertexai@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/vertexai/-/vertexai-1.10.0.tgz#86b76cf11190e01b41aedbc3103441c4f596ded3"
+  integrity sha512-HqYqoivNtkq59po8m7KI0n+lWKdz4kabENncYQXZCX/hBWJfXtKAfR/2nUQsP+TwSfHKoA7zDL2RrJYIv/j3VQ==
+  dependencies:
+    google-auth-library "^9.1.0"
+
 "@humanfs/core@^0.19.1":
   version "0.19.1"
   resolved "https://registry.npmjs.org/@humanfs/core/-/core-0.19.1.tgz"
@@ -1686,7 +1693,7 @@ globalthis@^1.0.4:
     define-properties "^1.2.1"
     gopd "^1.0.1"
 
-google-auth-library@^9.6.3:
+google-auth-library@^9.1.0, google-auth-library@^9.6.3:
   version "9.15.1"
   resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-9.15.1.tgz"
   integrity sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==
