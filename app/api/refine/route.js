@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
-// 認証情報ヘルパー関数 (変更なし)
+// 認証情報ヘルパー関数 (generateからコピー)
 async function setupCredentials() {
   const credentialsJsonString = process.env.GOOGLE_CREDENTIALS;
   if (!credentialsJsonString) {
@@ -21,39 +21,32 @@ export async function POST(request) {
   let tempCredFilePath;
   try {
     tempCredFilePath = await setupCredentials();
-    const { content, summary, prompt } = await request.json();
+    // フロントエンドから 'currentText'と'refinement'を受け取る
+    const { currentText, refinement } = await request.json();
 
-    if (!content || !prompt) {
+    if (!currentText || !refinement) {
       return NextResponse.json(
         { error: "必須項目が不足しています。" },
         { status: 400 }
       );
     }
 
-    let finalPrompt = prompt
-      .replace("{{content}}", content)
-      .replace("{{summary}}", summary || "特記事項なし");
+    // 文章修正用のプロンプトを組み立てる
+    const finalPrompt = `
+# 指示
+あなたは優秀な臨床医AIアシスタントです。以下の「現在の文章」を、「修正指示」に基づいて自然に修正・追記し、完成した文章のみを出力してください。元の文章の丁寧なトーンは維持してください。
 
-    // --- ✨ ここから変更 ---
+---
+# 現在の文章
+${currentText}
 
-    // AIへの出力形式を指示する部分をプロンプトに追加
-    const instruction = `
-    ---
-    # 出力形式
-    あなたは以下のJSON形式で回答を生成してください。本文と、それに対する臨床的に重要な追加情報の提案を**3つまで**含めてください。提案は、本文に自然に組み込めるような具体的な指示にしてください。
-    
-    \`\`\`json
-    {
-      "result": "（ここに生成された紹介状の本文）",
-      "suggestions": [
-        "（提案1）",
-        "（提案2）",
-        "（提案3）"
-      ]
-    }
-    \`\`\`
-    `;
-    finalPrompt += instruction;
+---
+# 修正指示
+${refinement}
+
+---
+# 修正後の文章
+`;
 
     const project = "api1-346604";
     const location = "us-central1";
@@ -61,24 +54,15 @@ export async function POST(request) {
 
     const generativeModel = vertexAI.getGenerativeModel({
       model: "gemini-2.5-pro",
-      // JSONモードを有効にする設定
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
     });
 
     const result = await generativeModel.generateContent(finalPrompt);
     const response = result.response;
     const generatedText =
-      response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+      response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // AIが生成したJSON文字列をパースする
-    const parsedResponse = JSON.parse(generatedText);
-
-    // パースしたオブジェクトをフロントエンドに返す
-    return NextResponse.json(parsedResponse);
-
-    // --- ✨ ここまで変更 ---
+    // 修正後の文章を result として返す
+    return NextResponse.json({ result: generatedText });
   } catch (error) {
     console.error("--- Full Error Trace ---", error);
     return NextResponse.json(

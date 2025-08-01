@@ -183,3 +183,64 @@
   border-radius: 0.5rem;
   background-color: #f1f5f9; /* slate-100 */
 }
+/* Letter.module.css に貼り付け、または既存のものを置き換え */
+
+/* サジェスト機能全体のコンテナ */
+.suggestionBox {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: #f7f7f7; /* 背景色を少しつける */
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+}
+
+.suggestionHeader {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 600; /* 少し太字に */
+  color: #333;
+}
+
+/* ボタンを横並びにするためのFlexbox設定 */
+.suggestionButtonsContainer {
+  display: flex;
+  flex-wrap: wrap; /* ボタンが多ければ折り返す */
+  gap: 12px; /* ボタン間の隙間 */
+}
+
+/* 個々のサジェストボタンの基本スタイル */
+.suggestionButton {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff; /* 背景は白 */
+  border: 1px solid #ccc;
+  color: #444; /* 文字色を少し濃く */
+  padding: 8px 16px;
+  border-radius: 20px; /* 角を丸くして柔らかい印象に */
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* アニメーション効果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* わずかに影をつける */
+}
+
+/* ホバー時の効果 */
+.suggestionButton:hover {
+  transform: translateY(-2px); /* 少し浮き上がる */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #999;
+}
+
+/* 選択されたボタンのスタイル */
+.suggestionButtonSelected {
+  background-color: #e8f4ff; /* 選択時の背景色を薄い青に */
+  color: #005fc0; /* 選択時の文字色 */
+  border-color: #0070f3; /* 枠線を濃い青に */
+  font-weight: 500;
+}
+
+/* 選択済みボタンのホバー効果は少し抑える */
+.suggestionButtonSelected:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
