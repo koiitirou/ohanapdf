@@ -58,16 +58,24 @@ const TopPage = () => {
             </Link>
           </li>
           <li>
-            {/* フル機能版 (GCS経由) へのリンク */}
             <Link href="/summary" className={styles.link}>
               <h2 style={{ color: "grey", fontSize: "1em" }}>
                 初診時サマリー &rarr;
               </h2>
-              {/* <p>
-                PDFとTXTを処理し、全結果（縦横PDF、分割PDF、Excel）を含むZIPをCloud
-                Storage経由でダウンロードします。
-              </p>
-              <p>(旧: cloudProcess.js)</p> */}
+            </Link>
+          </li>
+          <li>
+            <Link href="/discharge" className={styles.link}>
+              <h2 style={{ color: "grey", fontSize: "1em" }}>
+                退院時サマリー &rarr;
+              </h2>
+            </Link>
+          </li>
+          <li>
+            <Link href="/prescribe" className={styles.link}>
+              <h2 style={{ color: "grey", fontSize: "1em" }}>
+                他院処方箋 &rarr;
+              </h2>
             </Link>
           </li>
         </ul>
