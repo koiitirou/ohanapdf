@@ -154,7 +154,6 @@ export default function SummaryPage() {
         setError("PDFファイルのみアップロードできます。");
         return;
       }
-
       setFiles((prevFiles) => {
         const newFiles = pdfFiles.filter(
           (newFile) =>
@@ -162,9 +161,7 @@ export default function SummaryPage() {
         );
         return [...prevFiles, ...newFiles];
       });
-
       setError("");
-
       if (summary) {
         setSummary("");
       }
@@ -179,7 +176,9 @@ export default function SummaryPage() {
     }
   };
 
+  // ★ 修正点: ドラッグ＆ドロップ関連の関数を再確認・確定
   const handleDrag = useCallback((e) => {
+    // ブラウザのデフォルト動作（ファイルを開くなど）を防止
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -189,8 +188,10 @@ export default function SummaryPage() {
     }
   }, []);
 
+  // ★ 修正点: ドラッグ＆ドロップ関連の関数を再確認・確定
   const handleDrop = useCallback(
     (e) => {
+      // ブラウザのデフォルト動作（ファイルを開くなど）を防止
       e.preventDefault();
       e.stopPropagation();
       setIsDragActive(false);
@@ -261,22 +262,17 @@ export default function SummaryPage() {
         body: formData,
       });
 
-      // ★ 容量超過エラー(413)をハンドリング
       if (response.status === 413) {
         throw new Error(
           "容量を超過しました。アップロードするファイルの合計サイズを小さくしてください。"
         );
       }
-
-      // ★ その他のAPIエラーをハンドリング
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
           errorData.error || "サーバーで予期しないエラーが発生しました。"
         );
       }
-
-      // 成功した場合
       const data = await response.json();
       setSummary(data.summary);
     } catch (err) {
@@ -307,6 +303,7 @@ export default function SummaryPage() {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {/* ★ 修正点: ドラッグ＆ドロップイベントのハンドラをdivに設定 */}
           <div
             className={`${styles.fileDropzone} ${
               isDragActive ? styles.dragActive : ""
@@ -315,8 +312,6 @@ export default function SummaryPage() {
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
             onDrop={handleDrop}
-            // ★ ファイル選択ダイアログが2回表示される問題を修正
-            // onClick={onZoneClick} は削除
           >
             <input
               ref={fileInputRef}
