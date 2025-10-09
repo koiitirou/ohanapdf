@@ -260,16 +260,28 @@ export default function SummaryPage() {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "サーバーでエラーが発生しました。");
+
+      // ★ 容量超過エラー(413)をハンドリング
+      if (response.status === 413) {
+        throw new Error(
+          "容量を超過しました。アップロードするファイルの合計サイズを小さくしてください。"
+        );
       }
+
+      // ★ その他のAPIエラーをハンドリング
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "サーバーで予期しないエラーが発生しました。"
+        );
+      }
+
+      // 成功した場合
+      const data = await response.json();
       setSummary(data.summary);
     } catch (err) {
       console.error("Submission error:", err);
-      setError(
-        err.message instanceof Error ? err.message.message : String(err.message)
-      );
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -303,8 +315,8 @@ export default function SummaryPage() {
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
             onDrop={handleDrop}
-            // ★ 修正点: 二重クリックの原因となるため、この行を削除
-            // onClick={onZoneClick}
+            // ★ ファイル選択ダイアログが2回表示される問題を修正
+            // onClick={onZoneClick} は削除
           >
             <input
               ref={fileInputRef}
