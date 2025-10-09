@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/api/summary/route.js": {
+      "maxDuration": 300
+    }
+  }
+}

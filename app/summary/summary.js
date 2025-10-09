@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./summary.module.css";
 
-// デフォルトのプロンプトをコンポーネント内に定義
+// デフォルトのプロンプト
 const DEFAULT_PROMPT = `# 命令書
 
 あなたは、経験豊富な臨床アシスタントです。提供された複数のOCR化された医療関連ファイル（診療情報提供書、看護サマリー、処方箋、FAX連絡票など）を専門家の視点で横断的に読み解き、下記の【サマリーフォーマット】と【書式・思考ルール】に従って、実践的で質の高い「初診時サマリー」を完璧に作成してください。
@@ -57,6 +57,7 @@ const DEFAULT_PROMPT = `# 命令書
 # 書式・思考ルール
 
 1.  **【薬剤名の表記】**: 薬剤がジェネリック名で記載されている場合、先発品名を調べて補完し、**\`先発品名(ジェネリック名) 用量 錠数\`** の形式で記載すること。
+    * ジェネリック医薬品名のカタカナ部分は必ず半角で記載する。（例：ｱﾄﾞﾅ）
 2.  **【既往歴の表記】**: 個別の既往歴は **\`西暦年　病院名　内容\`** の形式で、全角スペースで区切って記載すること。
     * 文書から診断や手術に直接関連する病院名が特定できる場合は、**必ずその病院名を記載する**。
     * 明確な記述はないが、一貫したフォローアップ情報などから**関連性が強く推測される場合**は、「（明和病院と推測）」のように**推測であることを明記**した上で病院名を記載しても良い。
@@ -64,6 +65,11 @@ const DEFAULT_PROMPT = `# 命令書
     * コロン（：）や助詞（「にて」等）は使用しない。
 3.  **【処方内容の改行】**: 処方内容を記載する際、薬剤名、用量、錠数、用法は改行せず、一行にまとめて記載すること。
 4.  **【関連性の原則】**: ある病院がある疾患で記載されていても、別の疾患と明確に関連付けられていない限り、その病院を別の疾患の担当として紐付けないこと。文書に明記されている関連性のみを記載する。
+5.  **【用法の原則】**: 用法は、[1回量]錠/包/g等 分[1日回数][服用タイミング]の形式を厳守し、グループ最後の薬剤の最後に続けて記載してください。（例: 2錠 分2 朝夕食後）
+（正しい記載例）
+  5. パリエット(ﾗﾍﾞﾌﾟﾗｿﾞｰﾙNa)錠10㎎　 1錠
+  　 バクタミニ配合錠20㎎　　　　　　 2錠 分1 朝食後
+  6. アマリール(ｸﾞﾘﾒﾋﾟﾘﾄﾞ)錠1mg　　　  2錠 分2 朝夕食後
 
 # サマリーフォーマット
 
@@ -109,7 +115,7 @@ ADL)　
 【記録】
 #[プロブレム1]
 [関連情報を集約して箇条書きで記載]
-#[プロブレム2]
+#[プロブレ-ム2]
 [関連情報を集約して箇条書きで記載]
 
 【初診後経過】
@@ -129,7 +135,9 @@ export default function SummaryPage() {
   const [error, setError] = useState("");
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
+  const [isDragActive, setIsDragActive] = useState(false);
   const resultRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (summary || error) {
@@ -137,10 +145,70 @@ export default function SummaryPage() {
     }
   }, [summary, error]);
 
+  const handleFiles = useCallback(
+    (selectedFiles) => {
+      const pdfFiles = Array.from(selectedFiles).filter(
+        (file) => file.type === "application/pdf"
+      );
+      if (pdfFiles.length === 0) {
+        setError("PDFファイルのみアップロードできます。");
+        return;
+      }
+
+      setFiles((prevFiles) => {
+        const newFiles = pdfFiles.filter(
+          (newFile) =>
+            !prevFiles.some((prevFile) => prevFile.name === newFile.name)
+        );
+        return [...prevFiles, ...newFiles];
+      });
+
+      setError("");
+
+      if (summary) {
+        setSummary("");
+      }
+    },
+    [summary]
+  );
+
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+    if (e.target.files) {
+      handleFiles(e.target.files);
+      e.target.value = null;
+    }
+  };
+
+  const handleDrag = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setIsDragActive(true);
+    } else if (e.type === "dragleave") {
+      setIsDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragActive(false);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files);
+      }
+    },
+    [handleFiles]
+  );
+
+  const removeFile = (fileName) => {
+    setFiles(files.filter((file) => file.name !== fileName));
     setSummary("");
     setError("");
+  };
+
+  const onZoneClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleCopy = () => {
@@ -156,6 +224,16 @@ export default function SummaryPage() {
         setCopyButtonText("コピーに失敗");
         setTimeout(() => setCopyButtonText("結果をコピー"), 2000);
       });
+  };
+
+  const handleClear = () => {
+    setFiles([]);
+    setSummary("");
+    setError("");
+    setIsLoading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -189,7 +267,9 @@ export default function SummaryPage() {
       setSummary(data.summary);
     } catch (err) {
       console.error("Submission error:", err);
-      setError(err.message);
+      setError(
+        err.message instanceof Error ? err.message.message : String(err.message)
+      );
     } finally {
       setIsLoading(false);
     }
@@ -199,14 +279,43 @@ export default function SummaryPage() {
     <div className={styles.container}>
       <div className={styles.main}>
         <div className={styles.header}>
-          <h1 className={styles.title}>初診時サマリー生成AI</h1>
+          <div className={styles.titleContainer}>
+            <h1 className={styles.title}>初診時サマリー生成AI</h1>
+            <button
+              type="button"
+              onClick={handleClear}
+              className={styles.clearButton}
+            >
+              クリア
+            </button>
+          </div>
           <p className={styles.subtitle}>
             複数の医療関連PDFをアップロードすると、AIが初診時サマリーを作成します。
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className={styles.fileDropzone}>
+          <div
+            className={`${styles.fileDropzone} ${
+              isDragActive ? styles.dragActive : ""
+            }`}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            // ★ 修正点: 二重クリックの原因となるため、この行を削除
+            // onClick={onZoneClick}
+          >
+            <input
+              ref={fileInputRef}
+              id="file-upload"
+              name="files"
+              type="file"
+              multiple
+              accept=".pdf"
+              className={styles.srOnly}
+              onChange={handleFileChange}
+            />
             <label htmlFor="file-upload" className={styles.fileLabel}>
               <svg
                 className={styles.uploadIcon}
@@ -222,28 +331,45 @@ export default function SummaryPage() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className={styles.uploadText}>ファイルを選択</span>
+              <span className={styles.uploadText}>
+                {isDragActive ? "ファイルをドロップ" : "ファイルを選択"}
+              </span>
               <p className={styles.uploadHint}>
-                PDFファイルをドラッグ＆ドロップまたはクリック
+                PDFをドラッグ＆ドロップまたはクリック
               </p>
             </label>
-            <input
-              id="file-upload"
-              name="files"
-              type="file"
-              multiple
-              accept=".pdf"
-              className={styles.srOnly}
-              onChange={handleFileChange}
-            />
           </div>
 
           {files.length > 0 && (
             <div className={styles.fileListContainer}>
-              <p className={styles.fileListTitle}>選択中のファイル:</p>
+              <div className={styles.fileListHeader}>
+                <p className={styles.fileListTitle}>
+                  選択中のファイル ({files.length}件):
+                </p>
+                <button
+                  type="button"
+                  onClick={onZoneClick}
+                  className={styles.addFileButton}
+                >
+                  ＋ ファイルを追加
+                </button>
+              </div>
               <ul className={styles.fileList}>
-                {files.map((file) => (
-                  <li key={file.name}>{file.name}</li>
+                {files.map((file, index) => (
+                  <li
+                    key={`${file.name}-${index}`}
+                    className={styles.fileListItem}
+                  >
+                    <span>{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(file.name)}
+                      className={styles.removeFileButton}
+                      aria-label={`${file.name}を削除`}
+                    >
+                      ×
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -293,6 +419,8 @@ export default function SummaryPage() {
                   </svg>
                   生成中...
                 </>
+              ) : summary ? (
+                "現在のファイルで再生成"
               ) : (
                 "サマリーを生成"
               )}

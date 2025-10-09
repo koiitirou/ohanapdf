@@ -47,9 +47,7 @@ const TopPage = () => {
           <li>
             {/* フル機能版 (GCS経由) へのリンク */}
             <Link href="/letter" className={styles.link}>
-              <h2 style={{ color: "grey", fontSize: "1em" }}>
-                診療情報提供書 &rarr;
-              </h2>
+              <h2>診療情報提供書 &rarr;</h2>
               {/* <p>
                 PDFとTXTを処理し、全結果（縦横PDF、分割PDF、Excel）を含むZIPをCloud
                 Storage経由でダウンロードします。
@@ -59,9 +57,7 @@ const TopPage = () => {
           </li>
           <li>
             <Link href="/summary" className={styles.link}>
-              <h2 style={{ color: "grey", fontSize: "1em" }}>
-                初診時サマリー &rarr;
-              </h2>
+              <h2>初診時サマリー &rarr;</h2>
             </Link>
           </li>
           <li>
