@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./summary.module.css";
 
-// デフォルトのプロンプト
-const DEFAULT_PROMPT = `# 命令書
+// 2種類のプロンプトを定数として定義
+const ADMISSION_PROMPT = `# 命令書
 
 あなたは、経験豊富な臨床アシスタントです。提供された複数のOCR化された医療関連ファイル（診療情報提供書、看護サマリー、処方箋、FAX連絡票など）を専門家の視点で横断的に読み解き、下記の【サマリーフォーマット】と【書式・思考ルール】に従って、実践的で質の高い「初診時サマリー」を完璧に作成してください。
 
@@ -128,12 +128,52 @@ ADL)　
 【その他】
 [キーパーソン情報やADLの詳細などを記載]`;
 
+const DISCHARGE_PROMPT = `あなたは医療事務アシスタントです。提供された一連の診療情報提供書、看護サマリー、薬剤情報提供書などのPDFファイルの内容を精読し、以下の【指示】と【出力形式】に寸分違わず従って「退院時サマリー」を日本語で作成してください。
+
+【指示】
+
+■ 入院歴の形式:
+文書から一連の入院歴を時系列で抽出し、以下の形式を厳密に守って記載してください。
+- 一行目: 先頭に全角の黒丸「・」を付け、最初の入院について [期間] [医療機関名] ：[入院目的] の形式で記載します。
+- 二行目以降: 行頭を全角スペース1文字でインデント（字下げ）し、転院、一時退院、再入院などの経過を時系列で記載します。各行には必ず期間を記載してください。期間の形式は、開始日と終了日が同じ年の場合は「YYYY.M.D～M.D」のように終了日の年を省略し、年をまたぐ場合は「YYYY.M.D～YYYY.M.D」としてください。
+- 最終行: 最後の入院期間、退院元の医療機関名、そして全角コロン「：」に続けて最終診断名を記載してください。
+
+■ 退院時処方の形式:
+- 見出し: (退院時処方)に続けて、処方日数を記載してください。（例: (退院時処方)14日分処方）
+- 薬剤リスト:
+  - 用法（例：朝食後）が同一の薬剤を一つのグループにまとめ、番号を付けてリスト化してください。
+  - ジェネリック医薬品の場合は、可能な限り「先発品名(ジェネリック名)」の形式で記載してください。ジェネリック名は半角カタカナまたは英数字で、括弧との間にスペースは入れないでください。（例: パリエット(ﾗﾍﾞﾌﾟﾗｿﾞｰﾙNa)錠10mg）
+  - グループ内の各薬剤は改行して記載します。2行目以降は全角スペース1文字でインデントしてください。
+  - [薬剤名]と[1回量][単位]の間は、右端が揃うように全角スペースで調整してください。
+  - グループの用法（例: 分1朝食後）は、グループ最後の薬剤の最後に続けて記載してください。
+    （例）
+    5. パリエット(ﾗﾍﾞﾌﾟﾗｿﾞｰﾙNa)錠10㎎　 1錠
+    　 バクタミニ配合錠20㎎　　　　　　 2錠 分1朝食後
+- 屯用薬: 定期内服薬の下に「屯用」という見出しを設け、同様に記載してください。
+
+■ 処方に関する注記の形式:
+- 処方元: 処方薬の由来（例: 1～4は当院処方 5,6は〇〇病院処方）を一行で記載してください。行頭に記号は不要です。
+- 入院中の変更点: 上記の下の行に、必ず全角の「※」を行頭に付け、入院中の薬剤変更（増減量、中止、頓用への変更など）に関する注記を簡潔に記載してください。
+
+■ インスリン指示の形式:
+- (インスリン指示)という見出しを設けてください。
+- 薬剤名と、変更後の単位を記載してください。
+- 変更があった場合は、変更前の単位を括弧書きで必ず追記してください。（例: 朝2昼1夕1(朝3昼2夕2から変更)）
+
+■ 次回受診日の形式:
+- 次回：の後に日付のみを記載し、最後に全角スペースを1つ入れてください。
+
+■ 備考（経過サマリー）の形式:
+- (備考)という見出しを設けてください。
+- 内容は改行をせず、一つの連続した文章として、発症から退院までの臨床経過を時系列で簡潔に要約してください。`;
+
 export default function SummaryPage() {
+  const [summaryType, setSummaryType] = useState("admission");
   const [files, setFiles] = useState([]);
   const [summary, setSummary] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [prompt, setPrompt] = useState(ADMISSION_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
   const [isDragActive, setIsDragActive] = useState(false);
   const resultRef = useRef(null);
@@ -144,6 +184,17 @@ export default function SummaryPage() {
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [summary, error]);
+
+  const handleTypeChange = (type) => {
+    setSummaryType(type);
+    if (type === "admission") {
+      setPrompt(ADMISSION_PROMPT);
+    } else {
+      setPrompt(DISCHARGE_PROMPT);
+    }
+    setSummary("");
+    setError("");
+  };
 
   const handleFiles = useCallback(
     (selectedFiles) => {
@@ -176,9 +227,7 @@ export default function SummaryPage() {
     }
   };
 
-  // ★ 修正点: ドラッグ＆ドロップ関連の関数を再確認・確定
   const handleDrag = useCallback((e) => {
-    // ブラウザのデフォルト動作（ファイルを開くなど）を防止
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -188,10 +237,8 @@ export default function SummaryPage() {
     }
   }, []);
 
-  // ★ 修正点: ドラッグ＆ドロップ関連の関数を再確認・確定
   const handleDrop = useCallback(
     (e) => {
-      // ブラウザのデフォルト動作（ファイルを開くなど）を防止
       e.preventDefault();
       e.stopPropagation();
       setIsDragActive(false);
@@ -222,8 +269,6 @@ export default function SummaryPage() {
       })
       .catch((err) => {
         console.error("Failed to copy: ", err);
-        setCopyButtonText("コピーに失敗");
-        setTimeout(() => setCopyButtonText("結果をコピー"), 2000);
       });
   };
 
@@ -243,14 +288,9 @@ export default function SummaryPage() {
       setError("PDFファイルを1つ以上選択してください。");
       return;
     }
-    if (!prompt.trim()) {
-      setError("プロンプトを入力してください。");
-      return;
-    }
     setIsLoading(true);
     setError("");
     setSummary("");
-    setCopyButtonText("結果をコピー");
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
@@ -283,12 +323,17 @@ export default function SummaryPage() {
     }
   };
 
+  const pageTitle =
+    summaryType === "admission"
+      ? "初診時サマリー生成AI"
+      : "退院時サマリー生成AI";
+
   return (
     <div className={styles.container}>
       <div className={styles.main}>
         <div className={styles.header}>
           <div className={styles.titleContainer}>
-            <h1 className={styles.title}>初診時サマリー生成AI</h1>
+            <h1 className={styles.title}>{pageTitle}</h1>
             <button
               type="button"
               onClick={handleClear}
@@ -298,16 +343,32 @@ export default function SummaryPage() {
             </button>
           </div>
           <p className={styles.subtitle}>
-            複数の医療関連PDFをアップロードすると、AIが初診時サマリーを作成します。
+            複数の医療関連PDFをアップロードすると、AIがサマリーを作成します。
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* ★ 修正点: ドラッグ＆ドロップイベントのハンドラをdivに設定 */}
-          <div
-            className={`${styles.fileDropzone} ${
-              isDragActive ? styles.dragActive : ""
+        <div className={styles.toggleContainer}>
+          <button
+            onClick={() => handleTypeChange("admission")}
+            className={`${styles.toggleButton} ${
+              summaryType === "admission" ? styles.active : ""
             }`}
+          >
+            初診時サマリー
+          </button>
+          <button
+            onClick={() => handleTypeChange("discharge")}
+            className={`${styles.toggleButton} ${
+              summaryType === "discharge" ? styles.active : ""
+            }`}
+          >
+            退院時サマリー
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div
+            className={styles.fileDropzone}
             onDragEnter={handleDrag}
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
@@ -453,7 +514,7 @@ export default function SummaryPage() {
               </div>
               <div className={styles.disclaimer}>
                 <p>
-                  <strong>【ご注意】</strong>
+                  <strong>【ご注意】</strong>{" "}
                   この内容はAIによって自動生成されたものです。必ず元の資料と照合し、内容の正確性を確認してください。
                 </p>
               </div>

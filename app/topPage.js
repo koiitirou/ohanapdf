@@ -57,16 +57,16 @@ const TopPage = () => {
           </li>
           <li>
             <Link href="/summary" className={styles.link}>
-              <h2>初診時サマリー &rarr;</h2>
+              <h2>サマリー作成 &rarr;</h2>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link href="/discharge" className={styles.link}>
               <h2 style={{ color: "grey", fontSize: "1em" }}>
                 退院時サマリー &rarr;
               </h2>
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link href="/prescribe" className={styles.link}>
               <h2 style={{ color: "grey", fontSize: "1em" }}>
