@@ -20,17 +20,6 @@ const TopPage = () => {
               {/* <p>入力したテキストをZIPファイルで直接ダウンロードします。</p> */}
             </Link>
           </li>
-
-          <li>
-            {/* 日付フィルタリング版 へのリンク */}
-            <Link href="/prescription" className={styles.link}>
-              <h2>最古日フィルター &rarr;</h2>
-              {/* <p>
-                PDFのみをアップロードし、各IDの最も古い処方日のページのみを含むPDFを直接ダウンロードします。
-              </p>
-              <p>(旧: pdfProcess.js)</p> */}
-            </Link>
-          </li>
           <li>
             {/* フル機能版 (GCS経由) へのリンク */}
             <Link href="/full" className={styles.link}>
@@ -72,6 +61,16 @@ const TopPage = () => {
               <h2 style={{ color: "grey", fontSize: "1em" }}>
                 他院処方箋 &rarr;
               </h2>
+            </Link>
+          </li>
+          <li>
+            {/* 日付フィルタリング版 へのリンク */}
+            <Link href="/prescription" className={styles.link}>
+              <h2>最古日フィルター &rarr;</h2>
+              {/* <p>
+                PDFのみをアップロードし、各IDの最も古い処方日のページのみを含むPDFを直接ダウンロードします。
+              </p>
+              <p>(旧: pdfProcess.js)</p> */}
             </Link>
           </li>
         </ul>
