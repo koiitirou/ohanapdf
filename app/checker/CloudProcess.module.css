@@ -1,0 +1,189 @@
+/* components/CloudProcess.module.css */
+
+.container {
+  font-family: sans-serif; /* モダンなフォント */
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 600px; /* 最大幅を設定 */
+  margin: 20px auto; /* 中央寄せ */
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+}
+
+.container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.label {
+  display: block; /* ラベルをブロック要素に */
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.input,
+.textarea {
+  display: block; /* 入力フィールドをブロック要素に */
+  width: 100%; /* 幅を親要素に合わせる */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* paddingとborderをwidthに含める */
+  font-size: 1em;
+  transition: border-color 0.2s ease-in-out; /* フォーカス時の変化を滑らかに */
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none; /* デフォルトのアウトラインを消す */
+  border-color: #007bff; /* フォーカス時のボーダー色 */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25); /* フォーカス時の影 */
+}
+
+.inputGroup input:disabled,
+.inputGroup textarea:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.textInputOption {
+  /* TXTファイル選択とテキスト貼り付けのグループ */
+  /* inputGroup内の要素なので、inputGroupのスタイルがベースになる */
+  /* 必要であれば、さらにスタイルを追加 */
+}
+
+.orSeparator {
+  text-align: center;
+  margin: 15px 0;
+  color: #888;
+  font-size: 0.9em;
+}
+
+.button {
+  display: block; /* ボタンをブロック要素に */
+  width: 100%; /* 幅を親要素に合わせる */
+  padding: 12px 20px;
+  background-color: #007bff; /* ボタンの背景色 */
+  color: white; /* ボタンのテキスト色 */
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* ホバー時の変化を滑らかに */
+  margin-top: 20px; /* ボタンの上に余白 */
+}
+
+.button:hover:not(:disabled) {
+  background-color: #0056b3; /* ホバー時の背景色 */
+}
+
+.button:disabled {
+  background-color: #cccccc; /* 無効時の背景色 */
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.message {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  word-break: break-word; /* 長い単語を折り返す */
+  text-align: center; /* メッセージを中央寄せ (追加) */
+}
+
+.messageSuccess {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.messageError {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.messageInfo {
+  /* 処理中などの情報メッセージ */
+  background-color: #cce5ff;
+  color: #004085;
+  border: 1px solid #b8daff;
+}
+
+/* ★★★ 追加: オプショナルな入力グループ用のスタイル ★★★ */
+.optionalInputGroup {
+  /* inputGroupのスタイルを継承しつつ上書き・追加 */
+  background-color: #f0f0f0; /* 少し濃いめの背景色で区別 */
+  border-style: dashed; /* 破線ボーダー */
+  border-color: #bbb; /* 少し濃いめのボーダー色 */
+  /* paddingやmarginはinputGroupと同じか、必要なら調整 */
+}
+
+/* ★★★ 追加: オプショナルな入力のラベル用のスタイル ★★★ */
+.optionalLabel {
+  /* labelのスタイルを継承しつつ上書き・追加 */
+  font-size: 0.9em; /* 少し小さいフォントサイズ */
+  color: #666; /* 少し薄い文字色 */
+  font-weight: normal; /* 標準の太さ */
+}
+/* --- ここまで追加 --- */
+
+/* 結果表示部分のスタイル（必要に応じてコメント解除して使う） */
+/* .resultInfo {
+      margin-top: 20px;
+      padding: 15px;
+      border-top: 1px solid #eee;
+      font-size: 0.9em;
+      color: #555;
+  }
+
+  .resultInfo code {
+      background-color: #f0f0f0;
+      padding: 2px 4px;
+      border-radius: 3px;
+  } */
+/* 結果表示エリアのコンテナ */
+.resultContainer {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #f8fafc;
+}
+
+/* 結果テーブルのスタイル */
+.resultTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+/* テーブルヘッダーのスタイル */
+.tableHeader {
+  background-color: #f1f5f9;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* テーブルセルのスタイル */
+.tableCell {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: pre-wrap; /* 長いテキストでも折り返す */
+}
