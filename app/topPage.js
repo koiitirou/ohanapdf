@@ -16,14 +16,14 @@ const TopPage = () => {
           <li>
             {/* シンプル版 (Text-to-ZIP) へのリンク */}
             <Link href="/simple" className={styles.link}>
-              <h2>並び替え &rarr;</h2>
+              <h2>PDF並び替え &rarr;</h2>
               {/* <p>入力したテキストをZIPファイルで直接ダウンロードします。</p> */}
             </Link>
           </li>
           <li>
             {/* フル機能版 (GCS経由) へのリンク */}
             <Link href="/checker" className={styles.link}>
-              <h2>pdfチェッカー（記録確認用） &rarr;</h2>
+              <h2>PDFチェッカー（記録確認用） &rarr;</h2>
               {/* <p>
                 PDFとTXTを処理し、全結果（縦横PDF、分割PDF、Excel）を含むZIPをCloud
                 Storage経由でダウンロードします。
@@ -56,15 +56,15 @@ const TopPage = () => {
           </li> */}
           <li>
             <Link href="/prescribe" className={styles.link}>
-              <h2 style={{ color: "grey", fontSize: "1em" }}>
-                他院処方箋 &rarr;
-              </h2>
+              <h2>処方せんチェッカー（差分確認） &rarr;</h2>
             </Link>
           </li>
           <li>
             {/* 日付フィルタリング版 へのリンク */}
             <Link href="/prescription" className={styles.link}>
-              <h2>最古日フィルター &rarr;</h2>
+              <h2 style={{ color: "grey", fontSize: "1em" }}>
+                最古日フィルター &rarr;
+              </h2>
               {/* <p>
                 PDFのみをアップロードし、各IDの最も古い処方日のページのみを含むPDFを直接ダウンロードします。
               </p>
