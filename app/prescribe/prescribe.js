@@ -33,19 +33,19 @@ const PRESCRIPTION_CHECK_PROMPT = `# 命令書
     * **用法記載**: グループの用法（例: \`分1 昼食後\`）は、**グループ最後の薬剤と同じ行の最後に続けて記載**してください。絶対に改行してはいけません。
 
 3.  **差分注記**:
-    * 前回処方との比較で変更点があった場合のみ、薬剤リストの最後に改行し、必ず**全角の「※」**を行頭に付け、変更内容を簡潔に記載します。
-    * 形式: \`※YYYY.M.D [薬剤名] [変更前の量]→[変更後の量]\` （例: \`※2025.10.1 リフレックス 1.25→1.5錠\`）
-    * 薬剤の追加・中止も同様に記載します。（例: \`※2025.10.1 [薬剤名] 追加\`）
+    * 前回処方との比較で変更点があった場合のみ、薬剤リストの最後に改行し、必ず**全角の「※」**を行頭に付け、**全ての変更内容を1行にまとめて記載**します。
+    * **複数の変更点がある場合は、読点「、」で区切ってください。**
+    * **形式**: \`※YYYY.M.D [変更点1]、[変更点2]、[変更点3]\`
+    * (例): \`※2025.4.24 デパケンR 10mg→100mg、クービビック 中止、デエビゴ 追加、ルネスタ 追加\`
 
 ---
 *(出力例)*
-*2025.10.1　浅野神経クリニック　35日分処方変更あり　次回:第1木曜日*
-*1.リーマス（炭酸ﾘﾁｳﾑ）錠200㎎　 　　 2錠*
-*　トレリーフ(ｿﾞﾆｻﾐﾄﾞ)OD錠25㎎　　　　2錠　分1　昼食後*
-*2.ラミクタール（ﾗﾓﾄﾘｷﾞﾝ）錠100㎎　　 2錠　分2　朝夕食後*
-*...*
-*6.リフレックス(ﾐﾙﾀｻﾞﾋﾟﾝ)錠15㎎　   1.5錠　分1　眠前*
-*※2025.10.1 リフレックス 1.25→1.5錠*
+*2025.4.24　町田クリニック　21日分処方変更あり*
+*1.デパケンR（ﾊﾞﾙﾌﾟﾛ酸ﾅﾄﾘｳﾑ）錠100㎎　　　 1錠　分1　夕食後*
+*2.デエビゴ（ﾚﾝﾎﾞﾚｷｻﾝﾄ）錠10㎎　　　　　　 1錠*
+*　ルネスタ（ｴｽｿﾞﾋﾟｸﾛﾝ）錠1㎎　　　　　　　 1錠　分1　就寝直前*
+*3.ワイパックス（ﾛﾗｾﾞﾊﾟﾑ）錠0.5㎎　　　　　 0.5錠　不眠時、不穏時*
+*※2025.4.24 デパケンR 10mg→100mg、クービビック 中止、デエビゴ 追加、ルネスタ 追加、ワイパックス 追加*
 ---
 
 # 実行手順
@@ -190,7 +190,6 @@ export default function PrescriptionCheckerPage() {
       <div className={styles.main}>
         <header className={styles.header}>
           <div className={styles.titleContainer}>
-            {/* ★★★ 変更: タイトルを修正 ★★★ */}
             <h1 className={styles.title}>処方せんチェッカー</h1>
             <button
               type="button"
@@ -285,13 +284,12 @@ export default function PrescriptionCheckerPage() {
           )}
 
           <div className={styles.promptEditorSection}>
-            {/* ★★★ 変更: ラベルを修正 ★★★ */}
             <label
               htmlFor="previous-prescription"
               className={styles.promptEditorSummary}
               style={{ display: "block", marginBottom: "0.75rem" }}
             >
-              前回処方せん（任意）
+              前回処方せん（もしあれば）
             </label>
             <textarea
               id="previous-prescription"
@@ -299,8 +297,7 @@ export default function PrescriptionCheckerPage() {
               value={previousPrescription}
               onChange={(e) => setPreviousPrescription(e.target.value)}
               rows={8}
-              // ★★★ 変更: プレースホルダーを修正 ★★★
-              placeholder="もしあれば、前回の処方内容を貼り付けてください。差分を検出します。"
+              placeholder="前回の処方内容を貼り付けてください"
             />
           </div>
 
