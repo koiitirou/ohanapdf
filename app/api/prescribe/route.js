@@ -81,7 +81,7 @@ export async function POST(request) {
     });
 
     // --- モデルの選択 ---
-    const model = "gemini-2.5-pro"; // マルチモーダル対応のモデル
+    const model = "gemini-2.5-flash"; // マルチモーダル対応のモデル
 
     const generativeModel = vertex_ai.getGenerativeModel({
       model: model,
