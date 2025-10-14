@@ -1,46 +1,96 @@
-// components/CloudProcess.js (Excel生成追加、キーワード入力削除)
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import styles from "./CloudProcess.module.css";
 
 const CloudProcess = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [txtFile, setTxtFile] = useState(null);
   const [pastedText, setPastedText] = useState("");
-  // --- option1, option2 の state を削除 ---
-  // const [option1Text, setOption1Text] = useState("");
-  // const [option2Text, setOption2Text] = useState("");
-  // --- ここまで削除 ---
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
-  // resultInfo は不要
+  // State for drag & drop UI feedback
+  const [isDragging, setIsDragging] = useState(false);
 
-  // ★ エンドポイントURLは /zip-inputs のまま
+  // ★★★ Please replace with your actual Cloud Run URL ★★★
   const cloudRunUrl =
-    "https://zip-test-242078138933.us-central1.run.app/zip-inputs"; // ★★★ 必ず実際のURLに置き換えてください ★★★
+    "https://zip-test-242078138933.us-central1.run.app/zip-inputs";
 
-  // --- handlePdfChange, handleTxtChange, handlePasteChange は変更なし ---
+  // --- File input change handlers ---
   const handlePdfChange = (event) => {
     setMessage("");
-    setPdfFile(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setPdfFile(file);
+    }
   };
+
   const handleTxtChange = (event) => {
     setMessage("");
-    setPastedText("");
-    setTxtFile(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file && file.type === "text/plain") {
+      setPastedText(""); // Clear pasted text if a file is selected
+      setTxtFile(file);
+    }
   };
+
   const handlePasteChange = (event) => {
     setMessage("");
-    setTxtFile(null);
+    setTxtFile(null); // Clear file selection if text is pasted
     setPastedText(event.target.value);
   };
-  // --- ここまで変更なし ---
 
-  // --- option1, option2 のハンドラーを削除 ---
-  // const handleOption1Change = (event) => { setOption1Text(event.target.value); };
-  // const handleOption2Change = (event) => { setOption2Text(event.target.value); };
-  // --- ここまで削除 ---
+  // --- Drag and Drop Event Handlers ---
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation(); // This is necessary to allow dropping
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    setMessage("");
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    // Find the first PDF and first TXT file from the dropped items
+    const droppedPdf = Array.from(files).find(
+      (file) => file.type === "application/pdf"
+    );
+    const droppedTxt = Array.from(files).find(
+      (file) => file.type === "text/plain"
+    );
+
+    if (droppedPdf) {
+      setPdfFile(droppedPdf);
+    }
+    if (droppedTxt) {
+      setTxtFile(droppedTxt);
+      setPastedText(""); // Clear pasted text if a TXT file is dropped
+    }
+
+    if (!droppedPdf && !droppedTxt) {
+      setMessage(
+        "ドロップされたファイルにPDFまたはTXTファイルが見つかりませんでした。"
+      );
+    }
+  }, []);
 
   const handleSubmitToCloudRun = async () => {
     if (!pdfFile) {
@@ -61,7 +111,7 @@ const CloudProcess = () => {
     }
 
     setUploading(true);
-    setMessage("ファイル処理中..."); // メッセージ更新
+    setMessage("ファイル処理中...");
 
     const formData = new FormData();
     formData.append("pdfFile", pdfFile);
@@ -70,10 +120,6 @@ const CloudProcess = () => {
     } else if (pastedText !== "") {
       formData.append("textContent", pastedText);
     }
-    // --- option1, option2 の FormData への追加を削除 ---
-    // formData.append("option1Text", option1Text);
-    // formData.append("option2Text", option2Text);
-    // --- ここまで削除 ---
 
     try {
       const response = await fetch(cloudRunUrl, {
@@ -87,7 +133,6 @@ const CloudProcess = () => {
 
         const blob = await response.blob();
         const contentDisposition = response.headers.get("content-disposition");
-        // ★ デフォルトファイル名を変更
         let filename = "full_processed_output.zip";
         if (contentDisposition) {
           const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
@@ -106,7 +151,6 @@ const CloudProcess = () => {
         window.URL.revokeObjectURL(url);
         setMessage("処理完了。ZIPファイルのダウンロードを開始しました。");
       } else {
-        // エラー処理 (変更なし)
         try {
           const errorData = await response.json();
           const errorMessage =
@@ -139,27 +183,36 @@ const CloudProcess = () => {
     }
   };
 
-  // --- clearInputs から option1, option2 を削除 ---
   const clearInputs = () => {
     setPdfFile(null);
     setTxtFile(null);
     setPastedText("");
-    // setOption1Text(""); setOption2Text(""); // ← 削除
     const pdfInput = document.getElementById("pdfFileCloudRun");
     if (pdfInput) pdfInput.value = "";
     const txtInput = document.getElementById("txtFileCloudRun");
     if (txtInput) txtInput.value = "";
     setMessage("");
   };
+
   const getMessageClass = () => {
-    /* 省略 */ return styles.messageSuccess;
+    if (message.includes("エラー")) return styles.messageError;
+    if (message.includes("処理中") || message.includes("ダウンロード"))
+      return styles.messageInProgress;
+    if (message.includes("完了")) return styles.messageSuccess;
+    return styles.messageDefault;
   };
-  // --- ここまで修正 ---
 
   return (
-    <div className={styles.container}>
-      <h2>PDF/TXT処理 (ZIPダウンロード)</h2> {/* タイトル変更 */}
-      {/* PDF, TXT/Text 入力部分は変更なし */}
+    <div
+      className={`${styles.container} ${
+        isDragging ? styles.dropzoneActive : ""
+      }`}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <h2>PDF/TXT処理 (ZIPダウンロード)</h2>
       <div className={styles.inputGroup}>
         <label htmlFor="pdfFileCloudRun" className={styles.label}>
           PDFファイルを選択:
@@ -172,6 +225,7 @@ const CloudProcess = () => {
           disabled={uploading}
           className={styles.input}
         />
+        {pdfFile && <p className={styles.fileName}>選択中: {pdfFile.name}</p>}
       </div>
       <div className={styles.inputGroup}>
         <label htmlFor="txtFileInput" className={styles.label}>
@@ -190,6 +244,9 @@ const CloudProcess = () => {
               disabled={uploading || pastedText !== ""}
               className={styles.input}
             />
+            {txtFile && (
+              <p className={styles.fileName}>選択中: {txtFile.name}</p>
+            )}
           </div>
           <p className={styles.orSeparator}>- または -</p>
           <div>
@@ -209,20 +266,29 @@ const CloudProcess = () => {
           </div>
         </div>
       </div>
-      {/* --- ★★★ キーワード入力欄を削除 ★★★ --- */}
-      {/* <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>...</div> */}
-      {/* <div className={`${styles.inputGroup} ${styles.optionalInputGroup}`}>...</div> */}
-      {/* --- ここまで削除 --- */}
-      {/* --- ボタンテキスト変更 --- */}
-      <button
-        onClick={handleSubmitToCloudRun}
-        disabled={uploading || !pdfFile || (!txtFile && pastedText === "")}
-        className={styles.button}
-      >
-        {uploading ? "処理実行中..." : "処理を実行してZIPダウンロード"}
-      </button>
+      <div className={styles.buttonGroup}>
+        <button
+          onClick={handleSubmitToCloudRun}
+          disabled={uploading || !pdfFile || (!txtFile && pastedText === "")}
+          className={styles.button}
+        >
+          {uploading ? "処理実行中..." : "処理を実行してZIPダウンロード"}
+        </button>
+        <button
+          onClick={clearInputs}
+          disabled={uploading}
+          className={`${styles.button} ${styles.clearButton}`}
+        >
+          クリア
+        </button>
+      </div>
       {message && (
         <p className={`${styles.message} ${getMessageClass()}`}>{message}</p>
+      )}
+      {isDragging && (
+        <div className={styles.dropOverlay}>
+          <p>ファイルをドロップ</p>
+        </div>
       )}
     </div>
   );
