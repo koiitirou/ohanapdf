@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./summary.module.css";
 
-// 2種類のプロンプトを定数として定義
+// --- 定数定義 ---
+
 const ADMISSION_PROMPT = `# 命令書
 
 あなたは、経験豊富な臨床アシスタントです。提供された複数のOCR化された医療関連ファイル（診療情報提供書、看護サマリー、処方箋、FAX連絡票など）を専門家の視点で横断的に読み解き、下記の【サマリーフォーマット】と【書式・思考ルール】に従って、実践的で質の高い「初診時サマリー」を完璧に作成してください。
@@ -167,7 +168,15 @@ const DISCHARGE_PROMPT = `あなたは医療事務アシスタントです。提
 - (備考)という見出しを設けてください。
 - 内容は改行をせず、一つの連続した文章として、発症から退院までの臨床経過を時系列で簡潔に要約してください。`;
 
+// ★モデルの選択肢定義
+const MODELS = [
+  { id: "gemini-2.5-pro", label: "Pro (高精度)" },
+  { id: "gemini-2.5-flash", label: "Flash (標準)" },
+  { id: "gemini-2.5-flash-lite", label: "Flash Lite (高速)" },
+];
+
 export default function SummaryPage() {
+  // State
   const [summaryType, setSummaryType] = useState("admission");
   const [files, setFiles] = useState([]);
   const [summary, setSummary] = useState("");
@@ -176,15 +185,22 @@ export default function SummaryPage() {
   const [prompt, setPrompt] = useState(ADMISSION_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
   const [isDragActive, setIsDragActive] = useState(false);
+
+  // ★モデル選択State（初期値: 2.5-pro）
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-pro");
+
+  // Refs
   const resultRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Effects
   useEffect(() => {
     if (summary || error) {
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [summary, error]);
 
+  // Handlers
   const handleTypeChange = (type) => {
     setSummaryType(type);
     if (type === "admission") {
@@ -295,6 +311,7 @@ export default function SummaryPage() {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
     formData.append("prompt", prompt);
+    formData.append("model", selectedModel); // ★選択されたモデルIDを送信
 
     try {
       const response = await fetch("/api/summary", {
@@ -347,6 +364,7 @@ export default function SummaryPage() {
           </p>
         </div>
 
+        {/* サマリータイプ切り替え */}
         <div className={styles.toggleContainer}>
           <button
             onClick={() => handleTypeChange("admission")}
@@ -364,6 +382,26 @@ export default function SummaryPage() {
           >
             退院時サマリー
           </button>
+        </div>
+
+        {/* ★モデル切り替え（タイプ選択の下、ファイル選択の上） */}
+        <div
+          className={styles.toggleContainer}
+          style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}
+        >
+          {MODELS.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setSelectedModel(m.id)}
+              className={`${styles.toggleButton} ${
+                selectedModel === m.id ? styles.active : ""
+              }`}
+              style={{ fontSize: "0.9rem", padding: "0.4rem 1rem" }}
+              type="button"
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
 
         <form onSubmit={handleSubmit}>

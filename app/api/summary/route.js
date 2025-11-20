@@ -4,6 +4,14 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
+// --- タイムアウト設定 ---
+// Vercel Hobby(無料)プラン: 最大 60秒
+// Vercel Pro(有料)プラン: 最大 300秒
+export const maxDuration = 300;
+
+// 動的な処理であることを明示
+export const dynamic = "force-dynamic";
+
 // 認証情報を環境変数から読み取り、一時ファイルに書き出してそのパスを返すヘルパー関数
 async function setupCredentials() {
   const credentialsJsonString = process.env.GOOGLE_CREDENTIALS;
@@ -29,7 +37,8 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const files = formData.getAll("files");
-    const prompt = formData.get("prompt"); // フロントエンドからプロンプトを受け取る
+    const prompt = formData.get("prompt");
+    const modelId = formData.get("model"); // フロントエンドから選択されたモデルIDを受け取る
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -44,13 +53,16 @@ export async function POST(request) {
       );
     }
 
+    // デフォルトモデルのフォールバック
+    const selectedModel = modelId || "gemini-2.5-pro";
+
     console.log(
-      `Processing ${files.length} files for direct upload to Vertex AI...`
+      `Processing ${files.length} files for direct upload to Vertex AI using model: ${selectedModel}`
     );
 
     // --- Vertex AIへのリクエストパーツを作成 ---
     // 1. プロンプト（テキストパート）
-    const textPart = { text: prompt }; // 受け取ったプロンプトを使用
+    const textPart = { text: prompt };
 
     // 2. アップロードされたファイル（ファイルパート）
     const fileParts = await Promise.all(
@@ -71,11 +83,9 @@ export async function POST(request) {
       location: "us-central1",
     });
 
-    // --- Model Selection ---
-    const model = "gemini-2.5-pro";
-
+    // --- Model Selection (Dynamic) ---
     const generativeModel = vertex_ai.getGenerativeModel({
-      model: model,
+      model: selectedModel,
       generationConfig: {
         maxOutputTokens: 8192,
         temperature: 0.2,
@@ -84,7 +94,9 @@ export async function POST(request) {
       },
     });
 
-    console.log("Sending prompt and PDF files to Vertex AI...");
+    console.log(
+      `Sending prompt and PDF files to Vertex AI (${selectedModel})...`
+    );
 
     // --- Vertex AIへのリクエスト実行 ---
     const result = await generativeModel.generateContent({

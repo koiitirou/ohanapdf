@@ -30,8 +30,10 @@ export async function POST(request) {
     const formData = await request.formData();
     const files = formData.getAll("files");
     const mainPrompt = formData.get("prompt");
-    // ★★★ フロントエンドから「前回の処方箋」テキストを受け取る ★★★
     const previousPrescription = formData.get("previous_prescription");
+
+    // ★フロントエンドからモデルIDを取得（デフォルトはFlashに設定）
+    const selectedModel = formData.get("model") || "gemini-2.5-pro";
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -46,9 +48,7 @@ export async function POST(request) {
       );
     }
 
-    console.log(
-      `Processing ${files.length} files and previous prescription data...`
-    );
+    console.log(`Processing ${files.length} files. Model: ${selectedModel}`);
 
     // --- Vertex AIへのリクエストパーツを作成 ---
     // 1. プロンプトと前回処方箋を結合したテキストパートを作成
@@ -80,11 +80,10 @@ export async function POST(request) {
       location: "us-central1",
     });
 
-    // --- モデルの選択 ---
-    const model = "gemini-2.5-flash"; // マルチモーダル対応のモデル
-
+    // --- モデルの選択（動的に変更）---
+    // selectedModelには 'gemini-1.5-pro-002' などが入ってきます
     const generativeModel = vertex_ai.getGenerativeModel({
-      model: model,
+      model: selectedModel,
       generationConfig: {
         maxOutputTokens: 8192,
         temperature: 0.1, // 処方箋のような正確性が求められるタスクでは低めに設定
@@ -92,9 +91,7 @@ export async function POST(request) {
       },
     });
 
-    console.log(
-      "Sending prompt and files to Vertex AI for prescription analysis..."
-    );
+    console.log(`Sending prompt to Vertex AI using model: ${selectedModel}`);
 
     // --- Vertex AIへのリクエスト実行 ---
     const result = await generativeModel.generateContent({
@@ -110,10 +107,11 @@ export async function POST(request) {
 
     console.log("Successfully received response from Vertex AI.");
 
-    // ★★★ フロントエンドの 'summary' キーに合わせて返す ★★★
     return NextResponse.json({ summary: responseText });
   } catch (error) {
     console.error("--- Full Error Trace ---", error);
+
+    // エラーメッセージを少し詳細に（モデル名などを含める）
     const errorMessage =
       error instanceof Error ? error.message : "不明なエラーが発生しました";
     return NextResponse.json({ error: errorMessage }, { status: 500 });

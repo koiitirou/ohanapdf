@@ -1,10 +1,14 @@
-import { VertexAI } from "@google-cloud/vertexai";
 import { NextResponse } from "next/server";
+import { VertexAI } from "@google-cloud/vertexai";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
-// 認証情報ヘルパー関数 (変更なし)
+// --- タイムアウト設定 ---
+export const maxDuration = 300;
+export const dynamic = "force-dynamic";
+
+// 認証情報ヘルパー関数
 async function setupCredentials() {
   const credentialsJsonString = process.env.GOOGLE_CREDENTIALS;
   if (!credentialsJsonString) {
@@ -21,7 +25,9 @@ export async function POST(request) {
   let tempCredFilePath;
   try {
     tempCredFilePath = await setupCredentials();
-    const { content, summary, prompt } = await request.json();
+
+    // ★modelパラメータも受け取る
+    const { content, summary, prompt, model } = await request.json();
 
     if (!content || !prompt) {
       return NextResponse.json(
@@ -30,13 +36,14 @@ export async function POST(request) {
       );
     }
 
+    // デフォルトモデルのフォールバック
+    const selectedModel = model || "gemini-2.5-pro";
+
     let finalPrompt = prompt
       .replace("{{content}}", content)
       .replace("{{summary}}", summary || "特記事項なし");
 
-    // --- ✨ ここから変更 ---
-
-    // AIへの出力形式を指示する部分をプロンプトに追加
+    // --- サジェスト機能のための出力形式指示 ---
     const instruction = `
     ---
     # 出力形式
@@ -55,15 +62,21 @@ export async function POST(request) {
     `;
     finalPrompt += instruction;
 
+    console.log(
+      `Generating letter with suggestions using model: ${selectedModel}`
+    );
+
     const project = "api1-346604";
     const location = "us-central1";
     const vertexAI = new VertexAI({ project, location });
 
     const generativeModel = vertexAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: selectedModel,
       // JSONモードを有効にする設定
       generationConfig: {
         responseMimeType: "application/json",
+        maxOutputTokens: 8192,
+        temperature: 0.2,
       },
     });
 
@@ -77,8 +90,6 @@ export async function POST(request) {
 
     // パースしたオブジェクトをフロントエンドに返す
     return NextResponse.json(parsedResponse);
-
-    // --- ✨ ここまで変更 ---
   } catch (error) {
     console.error("--- Full Error Trace ---", error);
     return NextResponse.json(

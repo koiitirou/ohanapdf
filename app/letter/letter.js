@@ -3,7 +3,8 @@
 import { useState } from "react";
 import styles from "./Letter.module.css";
 
-// ✨ 省略されていた定数定義をここに追加
+// --- 定数定義 ---
+
 const DEFAULT_PROMPT_TEMPLATE = `
 # 役割設定
 あなたは、極めて優秀で経験豊富な日本の臨床医AIアシスタントです。提供された断片的な臨床情報を元に、日本の医療現場でそのまま使える、丁寧で過不足のない「診療情報提供書（紹介状）」の本文を作成します。
@@ -98,10 +99,17 @@ R4.5月、腫瘍マーカーの上昇がありご家族様と受診について�
 #### 生成結果
 `;
 
+// ★モデルの選択肢定義
+const MODELS = [
+  { id: "gemini-2.5-pro", label: "Pro (高精度)" },
+  { id: "gemini-2.5-flash", label: "Flash (標準)" },
+  { id: "gemini-2.5-flash-lite", label: "Flash Lite (高速)" },
+];
+
 const Letter = () => {
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  const [prompt, setPrompt] = useState(DEFAULT_PROMPT_TEMPLATE); // これでエラーが解消されます
+  const [prompt, setPrompt] = useState(DEFAULT_PROMPT_TEMPLATE);
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -110,6 +118,9 @@ const Letter = () => {
   const [additionalRequest, setAdditionalRequest] = useState("");
   const [isRefining, setIsRefining] = useState(false);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
+
+  // ★モデル選択State（初期値: 2.5-pro）
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-pro");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,10 +133,16 @@ const Letter = () => {
     setSelectedSuggestions([]);
 
     try {
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/letter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, summary, prompt }),
+        // ★modelパラメータを含めて送信
+        body: JSON.stringify({
+          content,
+          summary,
+          prompt,
+          model: selectedModel,
+        }),
       });
 
       if (!response.ok) {
@@ -192,6 +209,7 @@ const Letter = () => {
         body: JSON.stringify({
           currentText: result,
           refinement: refinementText,
+          model: selectedModel, // ★修正時も同じモデルを使用
         }),
       });
 
@@ -217,6 +235,39 @@ const Letter = () => {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1 className={styles.title}>診療情報提供書 作成支援</h1>
+        </div>
+
+        {/* ★モデル切り替え（フォームの上） */}
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "center",
+            marginBottom: "20px",
+          }}
+        >
+          {MODELS.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setSelectedModel(m.id)}
+              type="button"
+              style={{
+                padding: "8px 16px",
+                fontSize: "0.9rem",
+                borderRadius: "20px",
+                border:
+                  selectedModel === m.id ? "1px solid #666" : "1px solid #ccc",
+                background: selectedModel === m.id ? "#f0f0f0" : "transparent",
+                color: selectedModel === m.id ? "#333" : "#666",
+                fontWeight: selectedModel === m.id ? "bold" : "normal",
+                cursor: "pointer",
+                outline: "none",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
 
         <div className={styles.formWrapper}>
@@ -301,12 +352,9 @@ const Letter = () => {
                 <p>{isRefining ? "修正中..." : ""}</p>
               ) : (
                 <>
+                  {/* ★サジェスト表示部分（CSSが適用されるようクラス名を維持） */}
                   {suggestions.length > 0 && (
-                    // Letter.js ファイル内の該当箇所を修正
-
                     <div className={styles.suggestionButtonsContainer}>
-                      {" "}
-                      {/* ✨ ボタンを囲むコンテナを追加 */}
                       {suggestions.map((suggestion, index) => {
                         const isSelected =
                           selectedSuggestions.includes(suggestion);
@@ -318,7 +366,6 @@ const Letter = () => {
                             }`}
                             onClick={() => handleToggleSuggestion(suggestion)}
                           >
-                            {/* ✨ isSelectedがtrueの時にチェックマークを表示 */}
                             {isSelected ? "✅ " : ""}
                             {suggestion}
                           </button>

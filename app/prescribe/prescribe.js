@@ -1,11 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-// summary.module.cssを再利用するため、パスを適切に調整してください
-// 例: import styles from "../summary/summary.module.css";
 import styles from "./summary.module.css";
 
-// ★★★ UIの文言変更とプロンプトのルールを厳格化 ★★★
+// ★モデルの選択肢定義
+const MODEL_OPTIONS = [
+  { id: "gemini-2.5-pro", label: "Pro (高精度)", desc: "複雑な推論向け" },
+  { id: "gemini-2.5-flash", label: "Flash (標準)", desc: "バランス型" },
+  {
+    id: "gemini-2.5-flash-lite",
+    label: "Flash Lite (高速)",
+    desc: "最速・低コスト",
+  },
+];
+
+// プロンプト定義（変更なし）
 const PRESCRIPTION_CHECK_PROMPT = `# 命令書
 
 あなたは、処方監査を専門とする超高精度な臨床アシスタントAIです。提供されたOCR化されたPDFファイル（新しい処方箋）と、テキスト（前回の処方箋）を分析し、下記の【出力フォーマット】と【実行手順】に従って、処方内容を完璧に要約・比較してください。
@@ -79,6 +88,7 @@ const PRESCRIPTION_CHECK_PROMPT = `# 命令書
         * 手順2で薬剤の変更を検出した場合、ヘッダーを「変更あり」とし、【出力フォーマット】に従って差分注記を追加します。
         * 手順2で薬剤の変更がなかった場合、ヘッダーを「変更なし」とし、差分注記は記載しません。
     * **前回処方がない場合**: 比較は不要です。PDFから抽出した新規処方内容を、【出力フォーマット】に厳密に従って出力してください。`;
+
 export default function PrescriptionCheckerPage() {
   const [files, setFiles] = useState([]);
   const [previousPrescription, setPreviousPrescription] = useState("");
@@ -87,6 +97,10 @@ export default function PrescriptionCheckerPage() {
   const [error, setError] = useState("");
   const [prompt, setPrompt] = useState(PRESCRIPTION_CHECK_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
+
+  // ★初期値を「Flash Lite (高速)」に変更
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash-lite");
+
   const [isDragActive, setIsDragActive] = useState(false);
   const resultRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -174,6 +188,7 @@ export default function PrescriptionCheckerPage() {
     files.forEach((file) => formData.append("files", file));
     formData.append("prompt", prompt);
     formData.append("previous_prescription", previousPrescription);
+    formData.append("model", selectedModel);
 
     try {
       const response = await fetch("/api/prescribe", {
@@ -336,6 +351,50 @@ export default function PrescriptionCheckerPage() {
                 rows={15}
               />
             </details>
+          </div>
+
+          {/* ★モデル選択セクション（配置変更：生成ボタンの直上） */}
+          <div style={{ marginBottom: "1rem", marginTop: "1rem" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: "0.85rem",
+                color: "#666",
+              }}
+            >
+              <span style={{ fontSize: "0.8rem", marginRight: "4px" }}>
+                AIモデル:
+              </span>
+              {MODEL_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setSelectedModel(option.id)}
+                  style={{
+                    padding: "6px 12px",
+                    // ★デザイン変更：目立たないスタイル（枠線のみ、背景は淡色）
+                    border:
+                      selectedModel === option.id
+                        ? "1px solid #666"
+                        : "1px solid #e0e0e0",
+                    borderRadius: "20px",
+                    background:
+                      selectedModel === option.id ? "#f0f0f0" : "transparent",
+                    color: selectedModel === option.id ? "#333" : "#999",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    fontWeight: selectedModel === option.id ? "600" : "400",
+                    outline: "none",
+                  }}
+                  title={option.desc}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className={styles.submitButtonContainer}>
