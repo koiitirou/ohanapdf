@@ -228,7 +228,7 @@ export default function PrescriptionCheckerPage() {
       <div className={styles.main}>
         <header className={styles.header}>
           <div className={styles.titleContainer}>
-            <h1 className={styles.title}>処方せんチェッカー</h1>
+            <h1 className={styles.title}>レシピチェッカー</h1>
             <button
               type="button"
               onClick={handleClear}
@@ -238,7 +238,7 @@ export default function PrescriptionCheckerPage() {
             </button>
           </div>
           <p className={styles.subtitle}>
-            新しい処方箋(PDF)と前回の処方内容(テキスト)から変更点を検出します。
+            新しいレシピ(PDF)と前回のレシピ内容(テキスト)から変更点を検出します。
           </p>
         </header>
 
@@ -278,7 +278,7 @@ export default function PrescriptionCheckerPage() {
               <span className={styles.uploadText}>
                 {isDragActive
                   ? "ファイルをドロップ"
-                  : "新規処方箋 (PDF) を選択"}
+                  : "新規レシピ (PDF) を選択"}
               </span>
               <p className={styles.uploadHint}>
                 ドラッグ＆ドロップまたはクリック
@@ -327,7 +327,7 @@ export default function PrescriptionCheckerPage() {
               className={styles.promptEditorSummary}
               style={{ display: "block", marginBottom: "0.75rem" }}
             >
-              前回処方せん（もしあれば）
+              前回レシピ（もしあれば）
             </label>
             <textarea
               id="previous-prescription"
@@ -335,7 +335,7 @@ export default function PrescriptionCheckerPage() {
               value={previousPrescription}
               onChange={(e) => setPreviousPrescription(e.target.value)}
               rows={8}
-              placeholder="前回の処方内容を貼り付けてください"
+              placeholder="前回のレシピ内容を貼り付けてください"
             />
           </div>
 

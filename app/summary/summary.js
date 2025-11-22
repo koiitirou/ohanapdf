@@ -378,7 +378,7 @@ export default function SummaryPage() {
             </button>
           </div>
           <p className={styles.subtitle}>
-            複数の医療関連PDFをアップロードすると、AIがサマリーを作成します。
+            複数のPDFからAIがサマリーを作成します。。
           </p>
         </div>
 

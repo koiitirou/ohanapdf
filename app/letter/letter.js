@@ -234,7 +234,7 @@ const Letter = () => {
     <div className={styles.container}>
       <main className={styles.main}>
         <div className={styles.header}>
-          <h1 className={styles.title}>診療情報提供書 作成支援</h1>
+          <h1 className={styles.title}>レター作成支援</h1>
         </div>
 
         {/* ★モデル切り替え（フォームの上） */}
@@ -274,7 +274,7 @@ const Letter = () => {
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label htmlFor="content" className={styles.label}>
-                診療情報提供書の内容（含めたい内容を自由記載）:
+                レターの内容（含めたい内容を自由記載）:
               </label>
               <textarea
                 id="content"
@@ -316,7 +316,7 @@ const Letter = () => {
               disabled={isLoading}
               className={styles.button}
             >
-              {isLoading ? "生成中..." : "診療情報提供書を生成"}
+              {isLoading ? "生成中..." : "レターを生成"}
             </button>
           </form>
         </div>
