@@ -51,6 +51,8 @@ export default function DischargeSummaryPage() {
   const [error, setError] = useState("");
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const resultRef = useRef(null);
 
   // --- Effects ---
@@ -92,6 +94,22 @@ export default function DischargeSummaryPage() {
       setTimeout(() => setCopyButtonText("結果をコピー"), 2000);
     }
     document.body.removeChild(textArea);
+  };
+
+  // プレビューを表示する処理
+  const handlePreview = (file) => {
+    const fileUrl = URL.createObjectURL(file);
+    setPreviewUrl(fileUrl);
+    setIsPreviewOpen(true);
+  };
+
+  // プレビューを閉じる処理
+  const closePreview = () => {
+    setIsPreviewOpen(false);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl); // メモリ解放
+      setPreviewUrl(null);
+    }
   };
 
   // フォームが送信されたときの処理
@@ -195,9 +213,16 @@ export default function DischargeSummaryPage() {
               <div className={styles.fileListContainer}>
                 <h3 className={styles.fileListTitle}>選択中のファイル:</h3>
                 <ul className={styles.fileList}>
-                  {files.map((file) => (
-                    <li key={file.name} className={styles.fileListItem}>
-                      {file.name}
+                  {files.map((file, index) => (
+                    <li key={`${file.name}-${index}`} className={styles.fileListItem}>
+                      <span>{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => handlePreview(file)}
+                        className={styles.previewButton}
+                      >
+                        プレビュー
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -309,6 +334,35 @@ export default function DischargeSummaryPage() {
           </div>
         </div>
       </div>
+      {/* PDFプレビューモーダル */}
+      {isPreviewOpen && previewUrl && (
+        <div className={styles.modalOverlay} onClick={closePreview}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>PDFプレビュー</h3>
+              <button onClick={closePreview} className={styles.closeButton}>
+                &times;
+              </button>
+            </div>
+            <object
+              data={previewUrl}
+              type="application/pdf"
+              className={styles.pdfObject}
+            >
+              <p>
+                お使いのブラウザはPDFの表示をサポートしていません。
+                <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                  こちらからダウンロード
+                </a>
+                してください。
+              </p>
+            </object>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

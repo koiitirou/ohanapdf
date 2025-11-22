@@ -185,6 +185,8 @@ export default function SummaryPage() {
   const [prompt, setPrompt] = useState(ADMISSION_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
   const [isDragActive, setIsDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   // ★モデル選択State（初期値: 2.5-pro）
   const [selectedModel, setSelectedModel] = useState("gemini-2.5-pro");
@@ -295,6 +297,22 @@ export default function SummaryPage() {
     setIsLoading(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
+    }
+  };
+
+  // プレビューを表示する処理
+  const handlePreview = (file) => {
+    const fileUrl = URL.createObjectURL(file);
+    setPreviewUrl(fileUrl);
+    setIsPreviewOpen(true);
+  };
+
+  // プレビューを閉じる処理
+  const closePreview = () => {
+    setIsPreviewOpen(false);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl); // メモリ解放
+      setPreviewUrl(null);
     }
   };
 
@@ -467,14 +485,23 @@ export default function SummaryPage() {
                     className={styles.fileListItem}
                   >
                     <span>{file.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeFile(file.name)}
-                      className={styles.removeFileButton}
-                      aria-label={`${file.name}を削除`}
-                    >
-                      ×
-                    </button>
+                    <div className={styles.fileListActions}>
+                      <button
+                        type="button"
+                        onClick={() => handlePreview(file)}
+                        className={styles.previewButton}
+                      >
+                        プレビュー
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(file.name)}
+                        className={styles.removeFileButton}
+                        aria-label={`${file.name}を削除`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -560,6 +587,35 @@ export default function SummaryPage() {
           )}
         </div>
       </div>
+      {/* PDFプレビューモーダル */}
+      {isPreviewOpen && previewUrl && (
+        <div className={styles.modalOverlay} onClick={closePreview}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>PDFプレビュー</h3>
+              <button onClick={closePreview} className={styles.closeButton}>
+                &times;
+              </button>
+            </div>
+            <object
+              data={previewUrl}
+              type="application/pdf"
+              className={styles.pdfObject}
+            >
+              <p>
+                お使いのブラウザはPDFの表示をサポートしていません。
+                <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                  こちらからダウンロード
+                </a>
+                してください。
+              </p>
+            </object>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
