@@ -32,7 +32,7 @@ export async function POST(request) {
     const { gcsUri, prompt } = await request.json();
 
     if (!gcsUri) {
-      return NextResponse.json({ error: "No GCS URI provided" }, { status: 400 });
+      return NextResponse.json({ error: "GCS URIが指定されていません" }, { status: 400 });
     }
 
     const vertex_ai = new VertexAI({
@@ -41,7 +41,7 @@ export async function POST(request) {
     });
 
     const generativeModel = vertex_ai.getGenerativeModel({
-      model: "gemini-2.5-flash", // Using 1.5 Pro for multimodal capabilities
+      model: "gemini-2.5-flash-lite", // Using 1.5 Pro for multimodal capabilities
       generationConfig: {
         maxOutputTokens: 8192,
         temperature: 0.2,
@@ -58,7 +58,7 @@ export async function POST(request) {
     };
 
     const textPart = {
-      text: prompt || "Please summarize this audio.",
+      text: prompt || "あなたは常に日本語で回答するAIです。会話の内容を要約して。",
     };
 
     const result = await generativeModel.generateContent({
@@ -76,7 +76,7 @@ export async function POST(request) {
       console.error("Vertex AI Error Response:", JSON.stringify(error.response, null, 2));
     }
     return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
+      { error: error.message || "サーバー内部エラー" },
       { status: 500 }
     );
   } finally {

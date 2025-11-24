@@ -1,0 +1,250 @@
+/* app/phone/Phone.module.css */
+
+.container {
+  background-color: #f8fafc; /* slate-50 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  padding: 1rem;
+}
+
+.main {
+  width: 100%;
+  max-width: 42rem; /* max-w-2xl */
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff;
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding: 2.5rem;
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #1e293b; /* slate-800 */
+}
+
+/* Input Fields */
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #334155; /* slate-700 */
+}
+
+.textInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1; /* slate-300 */
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.textInput:focus {
+  outline: 2px solid #0284c7; /* sky-600 */
+  border-color: transparent;
+}
+
+.fileDropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8fafc;
+  transition: background-color 0.2s;
+  margin-bottom: 1.5rem;
+}
+
+.fileDropzone:hover {
+  background-color: #f1f5f9;
+}
+
+.fileInput {
+  display: block;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.fileInput::file-selector-button {
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: #eff6ff; /* blue-50 */
+  color: #1d4ed8; /* blue-700 */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fileInput::file-selector-button:hover {
+  background-color: #dbeafe; /* blue-100 */
+}
+
+.submitButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  color: #ffffff;
+  background-color: #0284c7; /* sky-600 */
+  transition: all 0.2s;
+  width: 100%;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #0369a1; /* sky-700 */
+}
+
+.submitButton:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.statusMessage {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.resultSection {
+  margin-top: 2.5rem;
+}
+
+.resultTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.resultContent {
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  white-space: pre-wrap;
+  color: #334155;
+  line-height: 1.75;
+}
+
+.copyButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #e2e8f0;
+  color: #475569;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copyButton:hover {
+  background-color: #cbd5e1;
+}
+
+.copyButton.copied {
+  background-color: #86efac; /* green-300 */
+  color: #14532d; /* green-900 */
+}
+
+/* History Section */
+.historySection {
+  margin-top: 3rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 2rem;
+}
+
+.historyTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.historyList {
+  list-style: none;
+  padding: 0;
+}
+
+.historyItem {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.historyItem:hover {
+  background-color: #f1f5f9;
+}
+
+.historyItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.historyName {
+  font-weight: 600;
+  color: #334155;
+}
+
+.historyDate {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.historyItem.selected {
+  background-color: #eff6ff; /* blue-50 */
+  border-color: #3b82f6; /* blue-500 */
+}
+
+.passwordPrompt {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.audioPlayer {
+  width: 100%;
+  margin-bottom: 1rem;
+}

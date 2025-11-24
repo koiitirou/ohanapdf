@@ -5,11 +5,13 @@ import { getGCSClient } from "../utils/gcsClient";
 export async function POST(request) {
   try {
     const formData = await request.formData();
+    const name = formData.get("name") || new Date().toLocaleString("ja-JP");
+    const password = formData.get("password") || "";
     const file = formData.get("file");
 
     if (!file) {
       return NextResponse.json(
-        { message: "No file uploaded" },
+        { message: "ファイルがアップロードされていません" },
         { status: 400 }
       );
     }
@@ -18,6 +20,8 @@ export async function POST(request) {
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
     let blob;
     let uploadPath;
+    let metadataPath;
+    let id;
 
     if (file.type === "application/pdf") {
       uploadPath = `upload/p50.pdf`;
@@ -26,16 +30,13 @@ export async function POST(request) {
       uploadPath = `upload/file1.txt`;
       blob = bucket.file(uploadPath);
     } else if (file.type === "audio/x-m4a" || file.type === "audio/mp4") {
-      // Use a timestamp to avoid overwriting and ensure uniqueness if needed, 
-      // but for this specific request, a fixed or simple name might be fine. 
-      // Let's use a simple name for now as per the pattern, but maybe with a timestamp to be safe?
-      // The existing pattern uses fixed names (p50.pdf, file1.txt). 
-      // Let's stick to a simple name for testing as requested "helloworld" style.
-      uploadPath = `upload/audio-${Date.now()}.m4a`;
+      id = Date.now().toString();
+      uploadPath = `upload/${id}.m4a`;
+      metadataPath = `upload/metadata/${id}.json`;
       blob = bucket.file(uploadPath);
     } else {
       return NextResponse.json(
-        { message: "Unsupported file type" },
+        { message: "サポートされていないファイル形式です" },
         { status: 400 }
       );
     }
@@ -48,17 +49,34 @@ export async function POST(request) {
       blobStream.on("finish", resolve).on("error", reject).end(buffer);
     });
 
+    // Save metadata if it's an audio upload
+    if (metadataPath) {
+      const metadata = {
+        id,
+        name,
+        password,
+        timestamp: Date.now(),
+        audioPath: uploadPath,
+        summary: "", // Initial empty summary
+      };
+      const metadataFile = bucket.file(metadataPath);
+      await metadataFile.save(JSON.stringify(metadata), {
+        contentType: "application/json",
+      });
+    }
+
     return NextResponse.json(
       {
-        message: "File uploaded successfully",
+        message: "ファイルのアップロードに成功しました",
         fileUrl: `gs://${process.env.GCS_BUCKET_NAME}/${uploadPath}`,
+        id: id, // Return ID for subsequent calls
       },
       { status: 200 }
     );
   } catch (error) {
     console.error("Server error:", error);
     return NextResponse.json(
-      { message: "Internal Server Error", error: error.message },
+      { message: "サーバー内部エラー", error: error.message },
       { status: 500 }
     );
   }
