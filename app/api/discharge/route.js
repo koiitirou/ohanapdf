@@ -123,14 +123,6 @@ export async function POST(request) {
       contents: [{ role: "user", parts: [textPart, ...fileParts] }],
     });
 
-    console.log("プロンプトとPDFファイルをVertex AIに送信しています...");
-
-    // 6. Vertex AIへのリクエスト実行
-    // テキストパートとファイルパートをまとめて送信
-    const result = await generativeModel.generateContent({
-      contents: [{ role: "user", parts: [textPart, ...fileParts] }],
-    });
-
     // レスポンスの構造を安全にチェック
     const summary =
       result?.response?.candidates?.[0]?.content?.parts?.[0]?.text;
