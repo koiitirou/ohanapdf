@@ -3,16 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./summary.module.css";
 
-// ★モデルの選択肢定義
-const MODEL_OPTIONS = [
-  { id: "gemini-2.5-pro", label: "Pro (高精度)", desc: "複雑な推論向け" },
-  { id: "gemini-2.5-flash", label: "Flash (標準)", desc: "バランス型" },
-  {
-    id: "gemini-2.5-flash-lite",
-    label: "Flash Lite (高速)",
-    desc: "最速・低コスト",
-  },
-];
+import ModelSelector from "../components/ModelSelector";
 
 // プロンプト定義（変更なし）
 const PRESCRIPTION_CHECK_PROMPT = `# 命令書
@@ -354,48 +345,7 @@ export default function PrescriptionCheckerPage() {
           </div>
 
           {/* ★モデル選択セクション（配置変更：生成ボタンの直上） */}
-          <div style={{ marginBottom: "1rem", marginTop: "1rem" }}>
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                justifyContent: "center",
-                alignItems: "center",
-                fontSize: "0.85rem",
-                color: "#666",
-              }}
-            >
-              <span style={{ fontSize: "0.8rem", marginRight: "4px" }}>
-                AIモデル:
-              </span>
-              {MODEL_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => setSelectedModel(option.id)}
-                  style={{
-                    padding: "6px 12px",
-                    // ★デザイン変更：目立たないスタイル（枠線のみ、背景は淡色）
-                    border:
-                      selectedModel === option.id
-                        ? "1px solid #666"
-                        : "1px solid #e0e0e0",
-                    borderRadius: "20px",
-                    background:
-                      selectedModel === option.id ? "#f0f0f0" : "transparent",
-                    color: selectedModel === option.id ? "#333" : "#999",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    fontWeight: selectedModel === option.id ? "600" : "400",
-                    outline: "none",
-                  }}
-                  title={option.desc}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
 
           <div className={styles.submitButtonContainer}>
             <button

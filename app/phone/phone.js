@@ -3,11 +3,14 @@
 
 import { useState, useEffect } from "react";
 import styles from "./Phone.module.css";
+import { MODEL_OPTIONS, DEFAULT_MODEL } from "../utils/modelConfig";
+import ModelSelector from "../components/ModelSelector";
 
 export default function Phone() {
   const [file, setFile] = useState(null);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
@@ -23,7 +26,12 @@ export default function Phone() {
 
   // Set default name on mount
   useEffect(() => {
-    setName(new Date().toLocaleString("ja-JP"));
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    setName(`${month}/${day} ${hour}:${minute}`);
     fetchHistory();
   }, []);
 
@@ -55,8 +63,8 @@ export default function Phone() {
       return;
     }
 
-    if (!password) {
-      alert("パスワードを入力してください。");
+    if (password.length < 4) {
+      alert("パスワードは4文字以上で入力してください。");
       return;
     }
 
@@ -99,6 +107,7 @@ export default function Phone() {
         body: JSON.stringify({
           gcsUri: gcsUri,
           prompt: "あなたは常に日本語で回答するAIです。会話の内容を要約して。",
+          model: selectedModel,
         }),
       });
 
@@ -220,6 +229,24 @@ export default function Phone() {
     }
   };
 
+  const getRelativeTime = (timestamp) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+
+    if (diff < minute) {
+      return "たった今";
+    } else if (diff < hour) {
+      return `${Math.floor(diff / minute)}分前`;
+    } else if (diff < day) {
+      return `${Math.floor(diff / hour)}時間前`;
+    } else {
+      return "1日前";
+    }
+  };
+
   return (
     <div className={styles.container}>
       <main className={styles.main}>
@@ -240,7 +267,7 @@ export default function Phone() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label className={styles.label}>パスワード (必須)</label>
+          <label className={styles.label}>パスワード (必須・4文字以上)</label>
           <input
             type="password"
             value={password}
@@ -248,6 +275,11 @@ export default function Phone() {
             className={styles.textInput}
             placeholder="パスワードを入力してください"
           />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>モデル選択</label>
+          <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
         </div>
 
         <div className={styles.fileDropzone}>
@@ -262,7 +294,7 @@ export default function Phone() {
 
         <button
           onClick={handleUploadAndProcess}
-          disabled={!file || !password || loading}
+          disabled={!file || password.length < 4 || loading}
           className={styles.submitButton}
         >
           {loading ? "処理中..." : "アップロードして処理開始"}
@@ -323,7 +355,7 @@ export default function Phone() {
                       {item.name}
                     </span>
                     <span className={styles.historyDate}>
-                      {new Date(item.timestamp).toLocaleString("ja-JP")}
+                      {getRelativeTime(item.timestamp)}
                     </span>
                   </div>
                   

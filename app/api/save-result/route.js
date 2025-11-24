@@ -14,7 +14,7 @@ export async function POST(request) {
 
     const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
-    const metadataPath = `upload/metadata/${id}.json`;
+    const metadataPath = `phone/metadata/${id}.json`;
     const file = bucket.file(metadataPath);
 
     const [exists] = await file.exists();

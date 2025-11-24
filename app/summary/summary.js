@@ -214,12 +214,7 @@ CT: 肝腫瘍（meta s/o）、両側胸水、器質化肺炎疑い
 【屯用】
 1. カロナール(ｱｾﾄｱﾐﾉﾌｪﾝ)錠200mg　　　　1錠 发熱時`;
 
-// ★モデルの選択肢定義
-const MODELS = [
-  { id: "gemini-2.5-pro", label: "Pro (高精度)" },
-  { id: "gemini-2.5-flash", label: "Flash (標準)" },
-  { id: "gemini-2.5-flash-lite", label: "Flash Lite (高速)" },
-];
+import ModelSelector from "../components/ModelSelector";
 
 export default function SummaryPage() {
   // State
@@ -461,24 +456,7 @@ export default function SummaryPage() {
         </div>
 
         {/* ★モデル切り替え（タイプ選択の下、ファイル選択の上） */}
-        <div
-          className={styles.toggleContainer}
-          style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}
-        >
-          {MODELS.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setSelectedModel(m.id)}
-              className={`${styles.toggleButton} ${
-                selectedModel === m.id ? styles.active : ""
-              }`}
-              style={{ fontSize: "0.9rem", padding: "0.4rem 1rem" }}
-              type="button"
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
 
         <form onSubmit={handleSubmit}>
           <div

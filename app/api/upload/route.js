@@ -31,8 +31,8 @@ export async function POST(request) {
       blob = bucket.file(uploadPath);
     } else if (file.type === "audio/x-m4a" || file.type === "audio/mp4") {
       id = Date.now().toString();
-      uploadPath = `upload/${id}.m4a`;
-      metadataPath = `upload/metadata/${id}.json`;
+      uploadPath = `phone/${id}.m4a`;
+      metadataPath = `phone/metadata/${id}.json`;
       blob = bucket.file(uploadPath);
     } else {
       return NextResponse.json(

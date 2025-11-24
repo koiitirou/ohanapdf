@@ -43,6 +43,9 @@ const DEFAULT_PROMPT = `あなたは医療事務アシスタントです。提�
 - (備考)という見出しを設けてください。
 - 内容は改行をせず、一つの連続した文章として、発症から退院までの臨床経過を時系列で簡潔に要約してください。`;
 
+import ModelSelector from "../components/ModelSelector";
+import { DEFAULT_MODEL } from "../utils/modelConfig";
+
 export default function DischargeSummaryPage() {
   // --- State Hooks ---
   const [files, setFiles] = useState([]);
@@ -50,6 +53,7 @@ export default function DischargeSummaryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -132,6 +136,7 @@ export default function DischargeSummaryPage() {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
     formData.append("prompt", prompt);
+    formData.append("model", selectedModel);
 
     try {
       // バックエンドのAPIにPOSTリクエストを送信
@@ -244,6 +249,11 @@ export default function DischargeSummaryPage() {
                   />
                 </div>
               </details>
+            </div>
+
+            <div className={styles.inputGroup} style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>
+               <label className={styles.label} style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>モデル選択</label>
+               <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
             </div>
 
             <div className={styles.submitContainer}>

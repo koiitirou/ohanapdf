@@ -21,8 +21,8 @@ export async function POST(request) {
   let tempCredFilePath;
   try {
     tempCredFilePath = await setupCredentials();
-    // フロントエンドから 'currentText'と'refinement'を受け取る
-    const { currentText, refinement } = await request.json();
+    // フロントエンドから 'currentText', 'refinement', 'model'を受け取る
+    const { currentText, refinement, model } = await request.json();
 
     if (!currentText || !refinement) {
       return NextResponse.json(
@@ -53,7 +53,7 @@ ${refinement}
     const vertexAI = new VertexAI({ project, location });
 
     const generativeModel = vertexAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: model || "gemini-2.5-pro",
     });
 
     const result = await generativeModel.generateContent(finalPrompt);

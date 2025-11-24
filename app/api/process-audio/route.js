@@ -29,10 +29,13 @@ export async function POST(request) {
   try {
     tempCredFilePath = await setupCredentials();
     
-    const { gcsUri, prompt } = await request.json();
+    const { gcsUri, prompt, model } = await request.json();
 
     if (!gcsUri) {
-      return NextResponse.json({ error: "GCS URIが指定されていません" }, { status: 400 });
+      return NextResponse.json(
+        { error: "GCS URI is required" },
+        { status: 400 }
+      );
     }
 
     const vertex_ai = new VertexAI({
@@ -41,7 +44,7 @@ export async function POST(request) {
     });
 
     const generativeModel = vertex_ai.getGenerativeModel({
-      model: "gemini-2.5-flash-lite", // Using 1.5 Pro for multimodal capabilities
+      model: model || "gemini-2.5-flash-lite",
       generationConfig: {
         maxOutputTokens: 8192,
         temperature: 0.2,

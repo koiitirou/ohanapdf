@@ -48,6 +48,7 @@ export async function POST(request) {
     const formData = await request.formData();
     const files = formData.getAll("files");
     const prompt = formData.get("prompt");
+    const model = formData.get("model"); // Get model from formData
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -55,12 +56,19 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    if (!prompt) {
-      return NextResponse.json(
-        { error: "プロンプトがありません。" },
-        { status: 400 }
-      );
-    }
+
+    const project = "api1-346604";
+    const location = "us-central1";
+    const vertexAI = new VertexAI({ project, location });
+
+    const generativeModel = vertexAI.getGenerativeModel({
+      model: model || "gemini-2.5-pro",
+      generationConfig: {
+        maxOutputTokens: 8192,
+        temperature: 0.2,
+        topP: 0.95,
+      },
+    });
 
     console.log(
       `受け取ったファイル数: ${files.length}件。Vertex AIへのマルチモーダルリクエストを準備します...`
@@ -84,23 +92,35 @@ export async function POST(request) {
       })
     );
 
-    // 4. Vertex AIの初期化
-    const vertex_ai = new VertexAI({
-      project: process.env.GCP_PROJECT_ID || "api1-346604",
-      location: process.env.GCP_LOCATION || "us-central1",
-    });
-
     // 5. モデルの選択
     // PDFなどのファイル内容を直接読み取れるマルチモーダルモデルを指定
-    const model = "gemini-2.5-pro";
+    // const model = "gemini-2.5-pro"; // Removed duplicate declaration
 
-    const generativeModel = vertex_ai.getGenerativeModel({
-      model: model,
-      generationConfig: {
-        maxOutputTokens: 8192,
-        temperature: 0.2,
-        topP: 0.95,
-      },
+    // generativeModel is already initialized above with the correct model
+    // We don't need to re-initialize it here.
+    // However, the previous initialization didn't have the vertex_ai instance which is created in step 4.
+    // Wait, step 4 creates 'vertex_ai' but step 2 created 'vertexAI'.
+    // The code is a bit messy. Let's clean it up.
+
+    // Re-using the vertexAI instance created earlier.
+    // The generativeModel was already created in step 2 (lines 64-71).
+    // But wait, the original code had two initializations?
+    // Line 62: const vertexAI = new VertexAI(...)
+    // Line 64: const generativeModel = vertexAI.getGenerativeModel(...)
+    // Line 96: const vertex_ai = new VertexAI(...)
+    // Line 105: const generativeModel = vertex_ai.getGenerativeModel(...)
+    
+    // I should consolidate this.
+    
+    // Let's just use the 'generativeModel' created at line 64.
+    // And remove the second initialization.
+    
+    console.log("プロンプトとPDFファイルをVertex AIに送信しています...");
+
+    // 6. Vertex AIへのリクエスト実行
+    // テキストパートとファイルパートをまとめて送信
+    const result = await generativeModel.generateContent({
+      contents: [{ role: "user", parts: [textPart, ...fileParts] }],
     });
 
     console.log("プロンプトとPDFファイルをVertex AIに送信しています...");

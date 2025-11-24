@@ -6,8 +6,8 @@ export async function GET(request) {
     const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
     
-    // List files in upload/metadata/
-    const [files] = await bucket.getFiles({ prefix: "upload/metadata/" });
+    // List files in phone/metadata/
+    const [files] = await bucket.getFiles({ prefix: "phone/metadata/" });
 
     const now = Date.now();
     const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -66,7 +66,7 @@ export async function POST(request) {
 
     const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
-    const metadataPath = `upload/metadata/${id}.json`;
+    const metadataPath = `phone/metadata/${id}.json`;
     const file = bucket.file(metadataPath);
 
     const [exists] = await file.exists();
@@ -112,7 +112,7 @@ export async function DELETE(request) {
 
     const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
-    const metadataPath = `upload/metadata/${id}.json`;
+    const metadataPath = `phone/metadata/${id}.json`;
     const file = bucket.file(metadataPath);
 
     const [exists] = await file.exists();

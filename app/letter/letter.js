@@ -99,12 +99,7 @@ R4.5月、腫瘍マーカーの上昇がありご家族様と受診について�
 #### 生成結果
 `;
 
-// ★モデルの選択肢定義
-const MODELS = [
-  { id: "gemini-2.5-pro", label: "Pro (高精度)" },
-  { id: "gemini-2.5-flash", label: "Flash (標準)" },
-  { id: "gemini-2.5-flash-lite", label: "Flash Lite (高速)" },
-];
+import ModelSelector from "../components/ModelSelector";
 
 const Letter = () => {
   const [content, setContent] = useState("");
@@ -238,37 +233,7 @@ const Letter = () => {
         </div>
 
         {/* ★モデル切り替え（フォームの上） */}
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-            marginBottom: "20px",
-          }}
-        >
-          {MODELS.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setSelectedModel(m.id)}
-              type="button"
-              style={{
-                padding: "8px 16px",
-                fontSize: "0.9rem",
-                borderRadius: "20px",
-                border:
-                  selectedModel === m.id ? "1px solid #666" : "1px solid #ccc",
-                background: selectedModel === m.id ? "#f0f0f0" : "transparent",
-                color: selectedModel === m.id ? "#333" : "#666",
-                fontWeight: selectedModel === m.id ? "bold" : "normal",
-                cursor: "pointer",
-                outline: "none",
-                transition: "all 0.2s ease",
-              }}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
 
         <div className={styles.formWrapper}>
           <form onSubmit={handleSubmit} className={styles.form}>
