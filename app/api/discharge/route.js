@@ -64,7 +64,7 @@ export async function POST(request) {
     const generativeModel = vertexAI.getGenerativeModel({
       model: model || "gemini-2.5-pro",
       generationConfig: {
-        maxOutputTokens: 8192,
+        maxOutputTokens: 16384,
         temperature: 0.2,
         topP: 0.95,
       },

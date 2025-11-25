@@ -75,7 +75,7 @@ export async function POST(request) {
       // JSONモードを有効にする設定
       generationConfig: {
         responseMimeType: "application/json",
-        maxOutputTokens: 8192,
+        maxOutputTokens: 16384,
         temperature: 0.2,
       },
     });

@@ -85,7 +85,7 @@ export async function POST(request) {
     const generativeModel = vertex_ai.getGenerativeModel({
       model: selectedModel,
       generationConfig: {
-        maxOutputTokens: 8192,
+        maxOutputTokens: 16384,
         temperature: 0.1, // 処方箋のような正確性が求められるタスクでは低めに設定
         topP: 0.95,
       },
