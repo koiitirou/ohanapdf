@@ -89,8 +89,8 @@ export default function PrescriptionCheckerPage() {
   const [prompt, setPrompt] = useState(PRESCRIPTION_CHECK_PROMPT);
   const [copyButtonText, setCopyButtonText] = useState("結果をコピー");
 
-  // ★初期値を「Flash Lite (高速)」に変更
-  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash-lite");
+  // ★初期値を「Pro (高精度)」に変更
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-pro");
 
   const [isDragActive, setIsDragActive] = useState(false);
   const resultRef = useRef(null);
