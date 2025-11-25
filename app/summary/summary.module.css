@@ -260,7 +260,44 @@
   font-family: inherit; /* font-sans */
   font-size: 1rem; /* text-base */
   line-height: 1.75; /* leading-relaxed */
+  transition: all 0.3s ease-in-out;
 }
+
+/* ストリーミング中のアニメーション */
+.summaryPre.streaming {
+  animation: streamingPulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+/* ストリーミング中の微妙な脈動効果 */
+@keyframes streamingPulse {
+  0%, 100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ストリーミング中のカーソル効果 */
+.summaryPre.streaming::after {
+  content: '▌';
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+  color: #0284c7; /* sky-600 */
+  font-weight: bold;
+}
+
+/* カーソルの点滅アニメーション */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
 
 /* Copy Button */
 .copyButton {

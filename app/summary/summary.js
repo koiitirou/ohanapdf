@@ -237,11 +237,21 @@ export default function SummaryPage() {
   const fileInputRef = useRef(null);
 
   // Effects
+  // 初回のみスクロール（ストリーミング中は毎回スクロールしない）
+  const hasScrolledRef = useRef(false);
   useEffect(() => {
-    if (summary || error) {
+    if ((summary || error) && !hasScrolledRef.current) {
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      hasScrolledRef.current = true;
     }
   }, [summary, error]);
+
+  // ローディング終了時にスクロールフラグをリセット
+  useEffect(() => {
+    if (!isLoading) {
+      hasScrolledRef.current = false;
+    }
+  }, [isLoading]);
 
   // Handlers
   const handleTypeChange = (type) => {
@@ -386,13 +396,31 @@ export default function SummaryPage() {
         );
       }
       if (!response.ok) {
-        const errorData = await response.json();
+        // エラーレスポンスの場合はJSONとして読み取る
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.error || "サーバーで予期しないエラーが発生しました。"
         );
       }
-      const data = await response.json();
-      setSummary(data.summary);
+
+      // ストリーミングレスポンスを読み取る
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // チャンクをデコードして累積
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedText += chunk;
+        
+        // リアルタイムで表示を更新
+        setSummary(accumulatedText);
+      }
+
+      console.log("Streaming completed successfully.");
     } catch (err) {
       console.error("Submission error:", err);
       setError(err.message);
@@ -611,7 +639,7 @@ export default function SummaryPage() {
                 <button onClick={handleCopy} className={styles.copyButton}>
                   {copyButtonText}
                 </button>
-                <pre className={styles.summaryPre}>{summary}</pre>
+                <pre className={`${styles.summaryPre} ${isLoading ? styles.streaming : ''}`}>{summary}</pre>
               </div>
               <div className={styles.disclaimer}>
                 <p>

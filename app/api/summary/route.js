@@ -95,33 +95,62 @@ export async function POST(request) {
     });
 
     console.log(
-      `Sending prompt and PDF files to Vertex AI (${selectedModel})...`
+      `Sending prompt and PDF files to Vertex AI (${selectedModel}) with streaming...`
     );
 
-    // --- Vertex AIへのリクエスト実行 ---
-    const result = await generativeModel.generateContent({
+    // --- Vertex AIへのストリーミングリクエスト実行 ---
+    const streamingResult = await generativeModel.generateContentStream({
       contents: [{ role: "user", parts: [textPart, ...fileParts] }],
     });
 
-    const summary = result.response.candidates[0].content.parts[0].text;
-    console.log("Successfully received summary from Vertex AI.");
+    // ReadableStreamを作成してクライアントにストリーミング
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of streamingResult.stream) {
+            // chunkからテキストを安全に抽出
+            const chunkText = chunk.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            if (chunkText) {
+              // テキストをエンコードして送信
+              controller.enqueue(new TextEncoder().encode(chunkText));
+            }
+          }
+          console.log("Successfully completed streaming from Vertex AI.");
+          controller.close();
+        } catch (error) {
+          console.error("Error during streaming:", error);
+          controller.error(error);
+        } finally {
+          // ストリーミング完了後に一時ファイルをクリーンアップ
+          if (tempCredFilePath) {
+            try {
+              await fs.unlink(tempCredFilePath);
+              console.log("Temporary credentials file deleted.");
+            } catch (e) {
+              console.error(
+                `Failed to delete temporary credentials file: ${tempCredFilePath}`,
+                e
+              );
+            }
+          }
+        }
+      },
+    });
 
-    return NextResponse.json({ summary });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
   } catch (error) {
     console.error("--- Full Error Trace ---", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    return NextResponse.json(
-      { error: "An unknown error occurred" },
-      { status: 500 }
-    );
-  } finally {
-    // 処理終了後、作成した一時ファイルをクリーンアップする
+    
+    // エラー時に一時ファイルをクリーンアップ
     if (tempCredFilePath) {
       try {
         await fs.unlink(tempCredFilePath);
-        console.log("Temporary credentials file deleted.");
+        console.log("Temporary credentials file deleted (error case).");
       } catch (e) {
         console.error(
           `Failed to delete temporary credentials file: ${tempCredFilePath}`,
@@ -129,5 +158,13 @@ export async function POST(request) {
         );
       }
     }
+    
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json(
+      { error: "An unknown error occurred" },
+      { status: 500 }
+    );
   }
 }
