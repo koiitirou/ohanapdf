@@ -95,10 +95,10 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>6. 今後の展望と本ツールの位置づけ</h2>
         <p>
-          これからの数年の間に、OSや基幹業務ソフト自体にAIが標準搭載される未来が確実にやってきます。そうなれば、本ツールのような機能は標準実装され、陳腐化するでしょう。
+          これからの数年の間に、OSや電子ソフト自体にAIが標準搭載される未来が確実にやってきます。そうなれば、本ツールのような機能は標準実装され、陳腐化するでしょう。
         </p>
         <p style={{ marginTop: "1rem" }}>
-          本ツールは、そうした便利な機能が一般的になるまでの<strong>「つなぎのツール（先行導入）」</strong>です。
+          本ツールは、そうした便利な機能が一般的になるまでの<strong>「つなぎのツール」</strong>です。
         </p>
       </section>
 
