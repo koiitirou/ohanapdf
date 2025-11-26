@@ -10,13 +10,13 @@ export default function TermsPage() {
         <Link href="/" style={{ textDecoration: "none", color: "#0070f3", fontSize: "0.9rem" }}>
           &larr; トップページに戻る
         </Link>
-        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", color: "#d32f2f" }}>【社外秘】業務支援AIツール「OhanaPDF」利用ガイドライン</h1>
+        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", color: "#d32f2f" }}>【社外秘】業務支援AIツール利用ガイドライン</h1>
       </header>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>1. はじめに：本ツールの取り扱いについて</h2>
         <p>
-          本ツールは、当組織の業務効率化のために独自に開発・導入されたものです。 本ツールの存在、およびURLは<strong>「完全社外秘」</strong>です。 家族や友人を含め、組織外部の人間には絶対に口外しないでください。
+          本ツールは、当組織の業務効率化のために独自に開発・導入されたものです。 本ツールの存在、およびURLは<strong>「完全社外秘」</strong>です。 家族や友人を含め、<strong>組織外部の人間には絶対に口外しない</strong>でください。
         </p>
         <p>
           現在は便宜上、外部ネットワークからもアクセス可能となっていますが、あくまで社内業務専用です。<br />
