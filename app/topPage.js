@@ -9,10 +9,29 @@ const TopPage = () => {
   return (
     <div className={styles.container}>
       {/* <h1 className={styles.title}>PDF処理</h1> */}
+      
+      <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+        <Link href="/terms" style={{ 
+          display: "inline-block", 
+          padding: "1rem 2rem", 
+          backgroundColor: "#ffebee", 
+          color: "#d32f2f", 
+          border: "2px solid #d32f2f", 
+          borderRadius: "8px", 
+          textDecoration: "none", 
+          fontWeight: "bold",
+          fontSize: "1.1rem",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+        }}>
+          ⚠️ 利用規定（必ずお読みください） &rarr;
+        </Link>
+      </div>
+
       <p className={styles.description}>利用機能を選択</p>
 
       <nav>
         <ul className={styles.linkList}>
+
           <li>
             {/* シンプル版 (Text-to-ZIP) へのリンク */}
             <Link href="/simple" className={styles.link}>
@@ -71,6 +90,7 @@ const TopPage = () => {
               <p>(旧: pdfProcess.js)</p> */}
             </Link>
           </li>
+
         </ul>
       </nav>
     </div>
