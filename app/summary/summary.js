@@ -689,7 +689,7 @@ export default function SummaryPage() {
             </details>
           </div>
 
-          <div className={styles.submitButtonContainer} style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+          <div className={styles.submitButtonContainer}>
             <button
               type="submit"
               disabled={isLoading || files.length === 0}
@@ -725,13 +725,20 @@ export default function SummaryPage() {
                 "サマリーを生成"
               )}
             </button>
+          </div>
+
+          {/* 代替オプション - GCS経由のアップロード */}
+          <div className={styles.alternativeOption}>
+            <p className={styles.alternativeText}>
+              ※ 容量が多い場合や挙動が安定しない場合は下記をお試しください
+            </p>
             <button
               type="button"
               onClick={handleGCSSubmit}
               disabled={isLoading || files.length === 0}
-              className={styles.gcsButton}
+              className={styles.secondaryButton}
             >
-              {isLoading ? "生成中..." : "サマリーを生成（容量多）"}
+              {isLoading ? "生成中..." : "サマリーを生成（代替方法）"}
             </button>
           </div>
         </form>
