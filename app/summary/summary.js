@@ -417,7 +417,7 @@ export default function SummaryPage() {
         // チャンクをデコードして累積
         const chunk = decoder.decode(value, { stream: true });
         accumulatedText += chunk;
-        
+
         // リアルタイムで表示を更新
         setSummary(accumulatedText);
       }
@@ -431,12 +431,83 @@ export default function SummaryPage() {
     }
   };
 
+  const handleGCSSubmit = async (e) => {
+    e.preventDefault();
+    if (files.length === 0) {
+      setError("PDFファイルを1つ以上選択してください。");
+      return;
+    }
+    setIsLoading(true);
+    setError("");
+    setSummary("");
+
+    try {
+      // 1. GCSへアップロード
+      const uploadFormData = new FormData();
+      files.forEach((file) => uploadFormData.append("files", file));
+
+      const uploadResponse = await fetch("/api/upload-summary", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || "ファイルのアップロードに失敗しました。"
+        );
+      }
+
+      const uploadResult = await uploadResponse.json();
+      const gcsUris = uploadResult.uploadedFiles;
+
+      // 2. Vertex AIで生成 (GCS URIを使用)
+      const summaryFormData = new FormData();
+      summaryFormData.append("prompt", prompt);
+      summaryFormData.append("model", selectedModel);
+      summaryFormData.append("gcsUris", JSON.stringify(gcsUris));
+
+      const response = await fetch("/api/summary", {
+        method: "POST",
+        body: summaryFormData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || "サーバーで予期しないエラーが発生しました。"
+        );
+      }
+
+      // ストリーミングレスポンスを読み取る
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedText += chunk;
+        setSummary(accumulatedText);
+      }
+
+      console.log("Streaming completed successfully (via GCS).");
+    } catch (err) {
+      console.error("Submission error:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const pageTitle =
     summaryType === "admission"
       ? "初診時サマリー生成AI"
       : summaryType === "discharge"
-      ? "退院時サマリー生成AI"
-      : "受診時サマリー生成AI";
+        ? "退院時サマリー生成AI"
+        : "受診時サマリー生成AI";
 
   return (
     <div className={styles.container}>
@@ -461,25 +532,22 @@ export default function SummaryPage() {
         <div className={styles.toggleContainer}>
           <button
             onClick={() => handleTypeChange("admission")}
-            className={`${styles.toggleButton} ${
-              summaryType === "admission" ? styles.active : ""
-            }`}
+            className={`${styles.toggleButton} ${summaryType === "admission" ? styles.active : ""
+              }`}
           >
             初診時サマリー
           </button>
           <button
             onClick={() => handleTypeChange("discharge")}
-            className={`${styles.toggleButton} ${
-              summaryType === "discharge" ? styles.active : ""
-            }`}
+            className={`${styles.toggleButton} ${summaryType === "discharge" ? styles.active : ""
+              }`}
           >
             退院時サマリー
           </button>
           <button
             onClick={() => handleTypeChange("consultation")}
-            className={`${styles.toggleButton} ${
-              summaryType === "consultation" ? styles.active : ""
-            }`}
+            className={`${styles.toggleButton} ${summaryType === "consultation" ? styles.active : ""
+              }`}
           >
             受診時サマリー
           </button>
@@ -588,7 +656,7 @@ export default function SummaryPage() {
             </details>
           </div>
 
-          <div className={styles.submitButtonContainer}>
+          <div className={styles.submitButtonContainer} style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
             <button
               type="submit"
               disabled={isLoading || files.length === 0}
@@ -623,6 +691,14 @@ export default function SummaryPage() {
               ) : (
                 "サマリーを生成"
               )}
+            </button>
+            <button
+              type="button"
+              onClick={handleGCSSubmit}
+              disabled={isLoading || files.length === 0}
+              className={styles.gcsButton}
+            >
+              {isLoading ? "生成中..." : "サマリーを生成（容量多）"}
             </button>
           </div>
         </form>

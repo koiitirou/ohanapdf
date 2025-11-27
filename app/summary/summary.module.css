@@ -557,3 +557,42 @@
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
+/* GCS Submit Button - Green when files are selected */
+.gcsButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  color: #ffffff;
+  background-color: #2e7d32; /* Green color */
+  transition: all 0.2s;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .gcsButton {
+    width: auto;
+  }
+}
+
+.gcsButton:hover:not(:disabled) {
+  background-color: #1b5e20; /* Darker green on hover */
+}
+
+.gcsButton:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #66bb6a; /* Green focus ring */
+}
+
+.gcsButton:disabled {
+  background-color: #d1d5db; /* Gray when disabled */
+  cursor: not-allowed;
+}

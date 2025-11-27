@@ -1,0 +1,6 @@
+﻿=== Current Credentials Status ===
+
+笨・GOOGLE_CREDENTIALS found:
+   Email: letter-vertex@api1-346604.iam.gserviceaccount.com
+
+笶・GCS_CREDENTIALS_JSON not found

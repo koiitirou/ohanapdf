@@ -39,10 +39,11 @@ export async function POST(request) {
     const files = formData.getAll("files");
     const prompt = formData.get("prompt");
     const modelId = formData.get("model"); // フロントエンドから選択されたモデルIDを受け取る
+    const gcsUrisJson = formData.get("gcsUris"); // GCS URIのJSON文字列を受け取る
 
-    if (!files || files.length === 0) {
+    if ((!files || files.length === 0) && !gcsUrisJson) {
       return NextResponse.json(
-        { error: "No files uploaded." },
+        { error: "No files uploaded or GCS URIs provided." },
         { status: 400 }
       );
     }
@@ -56,26 +57,41 @@ export async function POST(request) {
     // デフォルトモデルのフォールバック
     const selectedModel = modelId || "gemini-2.5-pro";
 
-    console.log(
-      `Processing ${files.length} files for direct upload to Vertex AI using model: ${selectedModel}`
-    );
+    let fileParts = [];
+
+    if (gcsUrisJson) {
+      // GCS URIを使用する場合
+      const gcsUris = JSON.parse(gcsUrisJson);
+      console.log(
+        `Processing ${gcsUris.length} files from GCS URIs using model: ${selectedModel}`
+      );
+      fileParts = gcsUris.map((file) => ({
+        fileData: {
+          mimeType: file.mimeType,
+          fileUri: file.fileUri,
+        },
+      }));
+    } else {
+      // 直接アップロードの場合 (既存ロジック)
+      console.log(
+        `Processing ${files.length} files for direct upload to Vertex AI using model: ${selectedModel}`
+      );
+      fileParts = await Promise.all(
+        files.map(async (file) => {
+          const buffer = await file.arrayBuffer();
+          return {
+            inlineData: {
+              mimeType: file.type,
+              data: Buffer.from(buffer).toString("base64"),
+            },
+          };
+        })
+      );
+    }
 
     // --- Vertex AIへのリクエストパーツを作成 ---
     // 1. プロンプト（テキストパート）
     const textPart = { text: prompt };
-
-    // 2. アップロードされたファイル（ファイルパート）
-    const fileParts = await Promise.all(
-      files.map(async (file) => {
-        const buffer = await file.arrayBuffer();
-        return {
-          inlineData: {
-            mimeType: file.type,
-            data: Buffer.from(buffer).toString("base64"),
-          },
-        };
-      })
-    );
 
     // --- Vertex AI Initialization ---
     const vertex_ai = new VertexAI({
@@ -145,7 +161,7 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("--- Full Error Trace ---", error);
-    
+
     // エラー時に一時ファイルをクリーンアップ
     if (tempCredFilePath) {
       try {
@@ -158,7 +174,7 @@ export async function POST(request) {
         );
       }
     }
-    
+
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
