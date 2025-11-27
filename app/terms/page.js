@@ -10,7 +10,7 @@ export default function TermsPage() {
         <Link href="/" style={{ textDecoration: "none", color: "#0070f3", fontSize: "0.9rem" }}>
           &larr; トップページに戻る
         </Link>
-        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", color: "#d32f2f" }}>【社外秘】業務ツール利用ガイドライン</h1>
+        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem",  }}>【社外秘】業務ツール利用ガイドライン</h1>
       </header>
 
       <section style={{ marginBottom: "2rem" }}>
@@ -71,12 +71,12 @@ export default function TermsPage() {
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 必ず人間がダブルチェックを行うこと
           </h3>
-          <p style={{ margin: "0.5rem 0 1rem" }}>AIが生成した文章はあくまで「下書き」です。あくまで操作した担当者が責任を持って最終的な公式記録を記載してください。。</p>
+          <p style={{ margin: "0.5rem 0 1rem" }}>AIが生成した文章はあくまで「下書き」です。あくまで操作した担当者が責任を持って最終的な公式記録を記載してください。</p>
 
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 特に注意すべき項目（以下の間違いは業務上致命的です）
           </h3>
-          <p style={{ margin: "0.5rem 0" }}>数値や事実は、必ず元のPDF資料と照らし合わせて指差し確認してください。</p>
+          <p style={{ margin: "0.5rem 0" }}>数値や事実は、必ず元のPDF資料と照らし合わせて確認してください。</p>
           <ul style={{ paddingLeft: "1.5rem", marginTop: "0.5rem" }}>
             <li><strong>日付・期間</strong>: 「3日前」等の相対表現が、誤った日付に変換されていないか。</li>
             <li><strong>専門用語・数値</strong>: 単位（mg/ml等）や桁数、専門的な名称に間違いがないか。</li>
