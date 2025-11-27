@@ -36,6 +36,17 @@ export default function TermsPage() {
           しかし、いくらシステムが堅牢でも、運用方法が誤っていれば情報は漏洩します。これを<strong>「責任共有モデル」</strong>と呼びます。
         </p>
 
+        <ul style={{ listStyleType: "none", paddingLeft: "0", margin: "1rem 0", backgroundColor: "#f0f8ff", padding: "1rem", borderRadius: "8px" }}>
+          <li style={{ marginBottom: "0.8rem" }}>
+            🛡️ <strong>[システムの責任]</strong>：<br />
+            AIクラウドや管理者側から、情報を外部に漏洩させない（技術的な）責任。
+          </li>
+          <li>
+            👤 <strong>[利用者の責任]</strong>：<br />
+            入力内容や端末の管理不備で、情報を外部に漏洩させない（運用上の）責任。
+          </li>
+        </ul>
+
         <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "transparent", borderRadius: "8px", fontSize: "0.85rem", color: "#666", border: "1px solid #eee" }}>
           <h3 style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#666", borderBottom: "1px solid #eee", paddingBottom: "0.5rem", fontWeight: "normal" }}>【用語解説・技術詳細】</h3>
           <p style={{ marginBottom: "0.5rem" }}>
