@@ -40,7 +40,7 @@ export async function POST(request) {
 
     const vertex_ai = new VertexAI({
       project: "api1-346604",
-      location: "us-central1",
+      location: "asia-northeast1",
     });
 
     const generativeModel = vertex_ai.getGenerativeModel({

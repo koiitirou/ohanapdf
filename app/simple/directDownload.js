@@ -14,7 +14,7 @@ const CloudProcess = () => {
 
   // ★★★ Please replace with your actual Cloud Run URL ★★★
   const cloudRunUrl =
-    "https://zip-test-242078138933.us-central1.run.app/zip-inputs";
+    "https://simple-242078138933.asia-northeast2.run.app/zip-inputs";
 
   // --- File input change handlers ---
   const handlePdfChange = (event) => {

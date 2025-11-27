@@ -67,7 +67,7 @@ export async function POST(request) {
     );
 
     const project = "api1-346604";
-    const location = "us-central1";
+    const location = "asia-northeast1";
     const vertexAI = new VertexAI({ project, location });
 
     const generativeModel = vertexAI.getGenerativeModel({

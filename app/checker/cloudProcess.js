@@ -227,7 +227,7 @@ const FileUpload = () => {
   const [searchQueries, setSearchQueries] = useState(initialQueries);
 
   const cloudRunUrl =
-    "https://hello-world-service-242078138933.us-central1.run.app";
+    "https://checker-242078138933.asia-northeast2.run.app";
 
   const resetState = () => {
     setResponseMessage("");

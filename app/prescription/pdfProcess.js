@@ -14,7 +14,7 @@ const PdfProcess = () => {
   // ★★★ Cloud Run エンドポイント URL ★★★
   // 前回と同じエンドポイントを想定
   const cloudRunUrl =
-    "https://prescription-242078138933.us-central1.run.app/filter-pdf-by-earliest-date"; // ★★★ 要確認・更新 ★★★
+    "https://prescription-242078138933.asia-northeast1.run.app/filter-pdf-by-earliest-date"; // ★★★ 要確認・更新 ★★★
 
   const handlePdfChange = (event) => {
     setMessage("");

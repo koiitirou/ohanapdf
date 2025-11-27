@@ -77,7 +77,7 @@ export async function POST(request) {
     // --- Vertex AIの初期化 ---
     const vertex_ai = new VertexAI({
       project: "api1-346604", // あなたのプロジェクトID
-      location: "us-central1",
+      location: "asia-northeast1",
     });
 
     // --- モデルの選択（動的に変更）---

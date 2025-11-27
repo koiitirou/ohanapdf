@@ -96,7 +96,7 @@ export async function POST(request) {
     // --- Vertex AI Initialization ---
     const vertex_ai = new VertexAI({
       project: "api1-346604",
-      location: "us-central1",
+      location: "asia-northeast1",
     });
 
     // --- Model Selection (Dynamic) ---
