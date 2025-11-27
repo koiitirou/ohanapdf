@@ -27,16 +27,30 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>2. セキュリティと「責任共有モデル」</h2>
         <p>
-          本ツールは、エンタープライズ向けの高度なセキュリティ基盤（国内リージョンのGoogle Cloud / Vertex AI）上で動作します。 入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される設定となっています。
+          本ツールは、エンタープライズ向けの高度なセキュリティ基盤（国内リージョンのGoogle Cloud / Vertex AI(*1)）上で動作します。入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される設定となっています。
         </p>
-        <p>
-          しかし、いくらシステムが堅牢でも、運用方法が誤っていれば情報は漏洩します。これを<strong>「責任共有モデル」</strong>と呼びます。
+        <p style={{ marginTop: "1rem" }}>
+          また、アプリケーション基盤においても、React(*2)、Next.js SSG(*3)、Vercel CDN(*4)（SOC 2 Type II / ISO 27001準拠）といった技術を採用し、安全性を担保しています。ご利用者様のブラウザ（クライアントサイド）とAIクラウドが直接通信を行う構成により、運営側サーバーへのデータ残留を防ぎ、情報漏洩リスクを構造的に排除しています。
         </p>
-        <ul style={{ listStyleType: "none", paddingLeft: "0", margin: "1rem 0" }}>
-          <li style={{ marginBottom: "0.5rem" }}>🛡️ <strong>システムの責任</strong>: データを安全に処理する（クラウド基盤と管理者の責任）</li>
-          <li>👤 <strong>運用の責任</strong>: データを適切に扱い、外部に漏らさない（利用する社員全員の責任）</li>
-        </ul>
-        <p>皆さんはこの「運用の責任」を担っています。以下のルールを厳守してください。</p>
+        <p style={{ marginTop: "1rem" }}>
+          しかし、いくらシステムが堅牢でも、運用方法が誤っていれば情報は漏洩します。これを「責任共有モデル」と呼びます。
+        </p>
+
+        <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "#f9f9f9", borderRadius: "8px", fontSize: "0.9rem" }}>
+          <h3 style={{ fontSize: "1rem", marginBottom: "0.5rem", color: "#333", borderBottom: "1px solid #ddd", paddingBottom: "0.5rem" }}>【用語解説・技術詳細】</h3>
+          <p style={{ marginBottom: "0.5rem" }}>
+            <strong>*(1) Vertex AI（データの保護）：</strong> Googleの企業向けAI基盤。入力データをAIの学習に一切利用せず、高度な暗号化環境で処理を行います。
+          </p>
+          <p style={{ marginBottom: "0.5rem" }}>
+            <strong>*(2) React（画面の保護）：</strong> データの無害化処理を標準で行うため、ウイルスのような悪意あるプログラムの実行（XSS）を未然に防ぎます。
+          </p>
+          <p style={{ marginBottom: "0.5rem" }}>
+            <strong>*(3) Next.js SSG（構造的な安全）：</strong> サーバー側にデータを保存する「データベース」を持たない構成のため、情報が漏れ出る経路そのものを遮断しています。
+          </p>
+          <p>
+            <strong>*(4) Vercel CDN（標的の排除）：</strong> 攻撃の標的となりやすい「自前のサーバー（VPS）」を設置せず、堅牢なクラウド経由で配信するため、不正侵入のリスクを根本から排除しています
+          </p>
+        </div>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
@@ -108,9 +122,9 @@ export default function TermsPage() {
           本ツールを安全に使いこなすには、皆さんの持つ専門的な知識と実務経験が欠かせません。 効率化によって生まれた時間は、顧客対応や関係各所との連携、そしてご自身の負担軽減に充ててください。
         </p>
       </section>
-      
+
       <footer style={{ marginTop: "3rem", borderTop: "1px solid #eee", paddingTop: "1rem", textAlign: "center" }}>
-         <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
+        <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
           トップページに戻る
         </Link>
       </footer>
