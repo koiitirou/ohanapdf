@@ -7,9 +7,7 @@ export default function TermsPage() {
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem", fontFamily: "sans-serif", lineHeight: "1.6", color: "#333" }}>
       <header style={{ marginBottom: "2rem", borderBottom: "1px solid #eee", paddingBottom: "1rem" }}>
-        <Link href="/" style={{ textDecoration: "none", color: "#0070f3", fontSize: "0.9rem" }}>
-          &larr; トップページに戻る
-        </Link>
+
         <h1 style={{ fontSize: "1.5rem", marginTop: "1rem",  }}>【社外秘】業務ツール利用ガイドライン</h1>
       </header>
 
@@ -71,7 +69,7 @@ export default function TermsPage() {
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 必ず人間がダブルチェックを行うこと
           </h3>
-          <p style={{ margin: "0.5rem 0 1rem" }}>AIが生成した文章はあくまで「下書き」です。あくまで操作した担当者が責任を持って最終的な公式記録を記載してください。</p>
+          <p style={{ margin: "0.5rem 0 1rem" }}><strong>AIが生成した文章はあくまで「下書き」</strong>です。操作した担当者が責任を持って、最終的な公式記録を記載してください。</p>
 
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 特に注意すべき項目（以下の間違いは業務上致命的です）
@@ -95,10 +93,10 @@ export default function TermsPage() {
           <li>・ 目安コスト:</li>
           <li style={{ paddingLeft: "1rem" }}>o テキスト要約：1回 約 0.1〜0.5 円</li>
           <li style={{ paddingLeft: "1rem" }}>o PDF解析：1回 約 1〜5 円</li>
-          <li style={{ paddingLeft: "1rem" }}>o 部署全体での月間想定予算：約 数百〜数千 円</li>
+          <li style={{ paddingLeft: "1rem" }}>o 部署全体での月間想定予算：約 数千 円　〜</li>
         </ul>
         <p>
-          業務外の私的な利用や目的のない乱用は慎むべきですが、業務や操作に慣れるための利用に関しては躊躇する必要はありません。業務効率化を実現することを最優先事項としてください。
+          業務外の私的な利用や目的のない乱用は慎むべきですが、業務や操作に慣れるために繰り返し利用することに関しては躊躇する必要はありません。業務効率化を実現することを最優先事項としてください。
         </p>
       </section>
 
@@ -112,11 +110,7 @@ export default function TermsPage() {
         </p>
       </section>
       
-      <footer style={{ marginTop: "3rem", borderTop: "1px solid #eee", paddingTop: "1rem", textAlign: "center" }}>
-         <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
-          トップページに戻る
-        </Link>
-      </footer>
+
     </div>
   );
 }
