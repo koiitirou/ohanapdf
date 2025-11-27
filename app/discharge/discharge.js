@@ -67,6 +67,33 @@ export default function DischargeSummaryPage() {
     }
   }, [summary, error]);
 
+  // セキュリティ: ページを閉じる/リロード時にStateをクリア
+  useEffect(() => {
+    const clearSensitiveData = () => {
+      setSummary("");
+      setFiles([]);
+      setError("");
+      setPreviewUrl(null);
+      setIsPreviewOpen(false);
+      console.log("Sensitive data cleared for security");
+    };
+
+    const handleBeforeUnload = () => clearSensitiveData();
+    const handlePageShow = (e) => { if (e.persisted) clearSensitiveData(); };
+    const handlePageHide = () => clearSensitiveData();
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      clearSensitiveData();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   // --- Event Handlers ---
   // ファイルが選択されたときの処理
   const handleFileChange = (e) => {
@@ -252,8 +279,8 @@ export default function DischargeSummaryPage() {
             </div>
 
             <div className={styles.inputGroup} style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>
-               <label className={styles.label} style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>モデル選択</label>
-               <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
+              <label className={styles.label} style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>モデル選択</label>
+              <ModelSelector selectedModel={selectedModel} onSelectModel={setSelectedModel} />
             </div>
 
             <div className={styles.submitContainer}>

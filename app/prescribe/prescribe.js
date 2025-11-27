@@ -102,6 +102,28 @@ export default function PrescriptionCheckerPage() {
     }
   }, [resultText, error]);
 
+  // セキュリティ: ページを閉じる/リロード時にStateをクリア
+  useEffect(() => {
+    const clearSensitiveData = () => {
+      setResultText("");
+      setFiles([]);
+      setPreviousPrescription("");
+      setError("");
+    };
+    const handleBeforeUnload = () => clearSensitiveData();
+    const handlePageShow = (e) => { if (e.persisted) clearSensitiveData(); };
+    const handlePageHide = () => clearSensitiveData();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("pagehide", handlePageHide);
+    return () => {
+      clearSensitiveData();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   const handleFiles = useCallback(
     (selectedFiles) => {
       const pdfFiles = Array.from(selectedFiles).filter(

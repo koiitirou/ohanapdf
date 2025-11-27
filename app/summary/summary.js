@@ -255,6 +255,48 @@ export default function SummaryPage() {
     }
   }, [isLoading]);
 
+  // セキュリティ: ページを閉じる/リロード時にStateをクリア
+  useEffect(() => {
+    const clearSensitiveData = () => {
+      setSummary("");
+      setFiles([]);
+      setError("");
+      setPreviewUrl(null);
+      setIsPreviewOpen(false);
+      console.log("Sensitive data cleared for security");
+    };
+
+    // ページを閉じる/リロード/遷移前にStateをクリア
+    const handleBeforeUnload = (e) => {
+      clearSensitiveData();
+    };
+
+    // ブラウザバックから戻ってきた時にStateをクリア（BFCache対策）
+    const handlePageShow = (e) => {
+      if (e.persisted) {
+        // ページがキャッシュから復元された場合
+        clearSensitiveData();
+      }
+    };
+
+    // タブが非表示になった時にクリア（pagehideの方がbeforeunloadより確実）
+    const handlePageHide = () => {
+      clearSensitiveData();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("pagehide", handlePageHide);
+
+    // コンポーネントアンマウント時にもクリア
+    return () => {
+      clearSensitiveData();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   // Handlers
   const handleTypeChange = (type) => {
     setSummaryType(type);
