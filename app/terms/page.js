@@ -10,32 +10,37 @@ export default function TermsPage() {
         <Link href="/" style={{ textDecoration: "none", color: "#0070f3", fontSize: "0.9rem" }}>
           &larr; トップページに戻る
         </Link>
-        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", color: "#d32f2f" }}>【社外秘】業務支援AIツール利用ガイドライン</h1>
+        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", color: "#d32f2f" }}>【社外秘】業務ツール利用ガイドライン</h1>
       </header>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>1. はじめに：本ツールの取り扱いについて</h2>
         <p>
-          本ツールは、当組織の業務効率化のために独自に開発・導入されたものです。 本ツールの存在、およびURLは<strong>「完全社外秘」</strong>です。 家族や友人を含め、<strong>組織外部の人間には絶対に口外しない</strong>でください。
+          本ツールは、当組織の業務効率化のために導入されたものです。 本ツールを安全に活用するためには、皆様の持つ専門的な知識と実務経験が欠かせません。
+        </p>
+        <p>
+          つきましては、以下のガイドラインを必ずご確認の上、適正な運用にご協力をお願いいたします。
+        </p>
+        <p style={{ marginTop: "1rem", fontWeight: "bold"}}>
+          【重要】本ツールの存在、およびURLは「完全社外秘」です。 家族や友人を含め、組織外部の人間には口外しないでください。
         </p>
         <p>
           現在は便宜上、外部ネットワークからもアクセス可能となっていますが、あくまで社内業務専用です。<br />
-          <span style={{ fontSize: "0.9rem", color: "#666" }}>※近い将来、セキュリティ強化のため社内ネットワークおよび指定のVPN接続端末以外からはアクセスできなくなる予定です。今のうちから「社内基幹システムの一部」として認識し、厳重に取り扱ってください。</span>
+          <span style={{ fontSize: "0.9rem", color: "#666" }}>※近い将来、セキュリティ強化のため社内ネットワークおよび指定のVPN接続端末以外からはアクセスできなくなる予定です。</span>
         </p>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>2. セキュリティと「責任共有モデル」</h2>
         <p>
-          本ツールは、エンタープライズ向けの高度なセキュリティを備えたAI基盤（国内リージョンのGoogle Cloud / Vertex AI(*1)上で動作します。<strong>入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される設定</strong>となっています。
+          本ツールは、エンタープライズ向けの高度なセキュリティを備えたAI基盤（国内データセンター運用の大手クラウドAI）上で動作します。<strong>入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される</strong>設定となっています。
         </p>
         <p style={{ marginTop: "1rem" }}>
-          また、アプリケーション基盤においても、React(*2)、Next.js SSG(*3)、Vercel CDN(*4)（SOC 2 Type II / ISO 27001準拠）といった技術を採用し、安全性を担保しています。 ご利用者様のブラウザ（クライアントサイド）とAIクラウド間で処理が完結し、運営側サーバーにはデータを保存・蓄積する場所（データベース）自体が存在しない構成のため、情報漏洩リスクを構造的に排除しています。
+          通信は全て暗号化（SSL/TLS）されており、第三者が内容を覗き見ることはできません。また、<strong>利用者様のブラウザとAI基盤の中間はデータを一切保持しない</strong>構成（ステートレス）であるため、情報がサーバーに残存・蓄積されるリスクを構造的に排除しています。
         </p>
         <p style={{ marginTop: "1rem" }}>
           しかし、いくらシステムが堅牢でも、運用方法が誤っていれば情報は漏洩します。これを<strong>「責任共有モデル」</strong>と呼びます。
         </p>
-
         <ul style={{ listStyleType: "none", paddingLeft: "0", margin: "1rem 0", backgroundColor: "#f0f8ff", padding: "1rem", borderRadius: "8px" }}>
           <li style={{ marginBottom: "0.8rem" }}>
             🛡️ <strong>[システムの責任]</strong>：<br />
@@ -46,35 +51,19 @@ export default function TermsPage() {
             入力内容や端末の管理不備で、情報を外部に漏洩させない（運用上の）責任。
           </li>
         </ul>
-
-        <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "transparent", borderRadius: "8px", fontSize: "0.85rem", color: "#666", border: "1px solid #eee" }}>
-          <h3 style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#666", borderBottom: "1px solid #eee", paddingBottom: "0.5rem", fontWeight: "normal" }}>【用語解説・技術詳細】</h3>
-          <p style={{ marginBottom: "0.5rem" }}>
-            <strong>*(1) Vertex AI（データの保護）：</strong> Googleの企業向けAI基盤。入力データをAIの学習に一切利用せず、高度な暗号化環境で処理を行います。
-          </p>
-          <p style={{ marginBottom: "0.5rem" }}>
-            <strong>*(2) React（画面の保護）：</strong> データの無害化処理を標準で行うため、ウイルスのような悪意あるプログラムの実行（XSS）を未然に防ぎます。
-          </p>
-          <p style={{ marginBottom: "0.5rem" }}>
-            <strong>*(3) Next.js SSG（構造的な安全）：</strong> サーバー側にデータを保存する「データベース」を持たない構成のため、情報が漏れ出る経路そのものを遮断しています。
-          </p>
-          <p>
-            <strong>*(4) Vercel CDN（標的の排除）：</strong> 攻撃の標的となりやすい「自前のサーバー（VPS）」を設置せず、堅牢なクラウド経由で配信するため、不正侵入のリスクを根本から排除しています
-          </p>
-        </div>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>3. 利用における絶対ルール</h2>
         <ol style={{ paddingLeft: "1.5rem" }}>
           <li style={{ marginBottom: "0.5rem" }}><strong>ブラウザ完結・保存禁止</strong><br />結果はブラウザ画面にのみ表示されます。業務終了後は必ずブラウザ（タブ）を閉じてください。</li>
-          <li style={{ marginBottom: "0.5rem" }}><strong>転載・送信の禁止</strong><br />生成されたテキストをメール、LINE、個人用クラウドなど、指定の基幹システム以外の場所に転送・保存することは厳禁です。</li>
+          <li style={{ marginBottom: "0.5rem" }}><strong>転載・送信の禁止</strong><br />生成されたテキストを個人メール、個人LINE、個人クラウドなど、指定の基幹システム以外の場所に転送・保存することは厳禁です。</li>
           <li><strong>ダブルチェック</strong><br />AIは事実と異なる回答を生成することがあります。必ず原典となる資料と照らし合わせ、最終的な責任は使用者が持ってください。</li>
         </ol>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>4. 業務上の責任とAIの特性（ハルシネーション）について</h2>
+        <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>4. AIの特性（ハルシネーション）について</h2>
         <p>
           AIは非常に優秀ですが、<strong>「もっともらしい虚偽（ハルシネーション）」</strong>を出力する可能性があります。AIの回答を鵜呑みにせず、以下の点には細心の注意を払ってください。
         </p>
@@ -82,7 +71,7 @@ export default function TermsPage() {
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 必ず人間がダブルチェックを行うこと
           </h3>
-          <p style={{ margin: "0.5rem 0 1rem" }}>AIが生成した文章はあくまで「下書き」です。最終的な公式記録への記載責任は、操作した担当者にあります。</p>
+          <p style={{ margin: "0.5rem 0 1rem" }}>AIが生成した文章はあくまで「下書き」です。あくまで操作した担当者が責任を持って最終的な公式記録を記載してください。。</p>
 
           <h3 style={{ fontSize: "1rem", color: "#2e7d32", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>✅</span> 特に注意すべき項目（以下の間違いは業務上致命的です）
@@ -100,7 +89,7 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>5. コストと利用マナーについて</h2>
         <p>
-          本ツールのAIエンジンは、使用量に応じた従量課金制です。 決して高額ではありませんが、塵も積もれば山となります。無駄遣いは避けてください。
+          本ツールのAIエンジンは、使用量に応じた従量課金制です。 
         </p>
         <ul style={{ listStyleType: "none", paddingLeft: "0", margin: "1rem 0" }}>
           <li>・ 目安コスト:</li>
@@ -109,34 +98,22 @@ export default function TermsPage() {
           <li style={{ paddingLeft: "1rem" }}>o 部署全体での月間想定予算：約 数百〜数千 円</li>
         </ul>
         <p>
-          業務に必要な利用をためらう必要はありませんが、「不要な再生成を繰り返す」などの無駄な利用は控えてください。
+          業務外の私的な利用や目的のない乱用は慎むべきですが、業務や操作に慣れるための利用に関しては躊躇する必要はありません。業務効率化を実現することを最優先事項としてください。
         </p>
-        <div style={{ border: "1px solid #ddd", padding: "1rem", borderRadius: "4px", marginTop: "1rem", fontSize: "0.9rem" }}>
-          <strong>【利用状況の確認について】</strong><br />
-          不正利用や過度な利用を防ぐため、必要に応じて「いつ、どの端末から、どれくらい利用があったか」の通信ログを管理者が確認することができます。<br />
-          ※ただし、「入力された個人情報」や「生成された文章の中身」は技術的に一切保存されないため、管理者であってもそれらを見ることは不可能です。
-        </div>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>6. 今後の展望と本ツールの位置づけ</h2>
         <p>
-          これからの数年の間に、OSや電子ソフト自体にAIが標準搭載される未来が確実にやってきます。そうなれば、本ツールのような機能は標準実装され、陳腐化するでしょう。
+          将来的にOSや電子ソフト自体にAIが標準搭載されることになれば、本ツールのような機能は当たり前になるでしょう。
         </p>
         <p style={{ marginTop: "1rem" }}>
           本ツールは、そうした便利な機能が一般的になるまでの<strong>「つなぎのツール」</strong>です。
         </p>
       </section>
-
-      <section>
-        <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>7. 導入にあたるお願い</h2>
-        <p>
-          本ツールを安全に使いこなすには、皆さんの持つ専門的な知識と実務経験が欠かせません。 効率化によって生まれた時間は、顧客対応や関係各所との連携、そしてご自身の負担軽減に充ててください。
-        </p>
-      </section>
-
+      
       <footer style={{ marginTop: "3rem", borderTop: "1px solid #eee", paddingTop: "1rem", textAlign: "center" }}>
-        <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
+         <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
           トップページに戻る
         </Link>
       </footer>
