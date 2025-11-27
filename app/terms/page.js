@@ -27,10 +27,10 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>2. セキュリティと「責任共有モデル」</h2>
         <p>
-          本ツールは、エンタープライズ向けの高度なセキュリティを備えたAI基盤（国内リージョンのGoogle Cloud / Vertex AI(*1)）上で動作します。<strong>入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される設定</strong>となっています。
+          本ツールは、エンタープライズ向けの高度なセキュリティを備えたAI基盤（国内リージョンのGoogle Cloud / Vertex AI(*1)上で動作します。<strong>入力されたデータはAIの学習には一切使用されず、処理後は即座に破棄される設定</strong>となっています。
         </p>
         <p style={{ marginTop: "1rem" }}>
-          また、アプリケーション基盤においても、React(*2)、Next.js SSG(*3)、Vercel CDN(*4)（SOC 2 Type II / ISO 27001準拠）といった技術を採用し、安全性を担保しています。ご利用者様のブラウザ（クライアントサイド）とAI基盤が直接通信を行う構成により、運営側サーバーを含む中間経路には一切のデータを残さない（通過させるだけ）という構成により、情報漏洩リスクを構造的に排除しています。
+          また、アプリケーション基盤においても、React(*2)、Next.js SSG(*3)、Vercel CDN(*4)（SOC 2 Type II / ISO 27001準拠）といった技術を採用し、安全性を担保しています。 ご利用者様のブラウザ（クライアントサイド）とAIクラウド間で処理が完結し、運営側サーバーにはデータを保存・蓄積する場所（データベース）自体が存在しない構成のため、情報漏洩リスクを構造的に排除しています。
         </p>
         <p style={{ marginTop: "1rem" }}>
           しかし、いくらシステムが堅牢でも、運用方法が誤っていれば情報は漏洩します。これを<strong>「責任共有モデル」</strong>と呼びます。
