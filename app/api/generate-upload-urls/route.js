@@ -13,11 +13,11 @@ export async function POST(request) {
         }
 
         const storage = getGCSClient();
-        const bucketName = process.env.GCS_BUCKET_NAME;
+        const bucketName = process.env.GCS_BUCKET_NAME2;
 
         if (!bucketName) {
-            console.error("GCS_BUCKET_NAME environment variable is not set.");
-            throw new Error("Server configuration error: GCS_BUCKET_NAME missing");
+            console.error("GCS_BUCKET_NAME2 environment variable is not set.");
+            throw new Error("Server configuration error: GCS_BUCKET_NAME2 missing");
         }
 
         const bucket = storage.bucket(bucketName);
@@ -35,7 +35,7 @@ export async function POST(request) {
             // Generate unique file path
             const timestamp = Date.now();
             const safeName = name.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const uploadPath = `upload/summary/${timestamp}_${safeName}`;
+            const uploadPath = `ohpdf/summary/${timestamp}_${safeName}`;
             const fileBlob = bucket.file(uploadPath);
 
             // Generate signed URL for PUT operation (expires in 15 minutes)

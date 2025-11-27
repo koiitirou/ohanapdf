@@ -5,15 +5,15 @@ let storageClient = null;
 export const getGCSClient = () => {
   if (!storageClient) {
     let credentials;
-    // Try GCS_CREDENTIALS_JSON first
-    let credentialsData = process.env.GCS_CREDENTIALS_JSON;
+    // Try GOOGLE_CREDENTIALS2 first (as requested by user)
+    let credentialsData = process.env.GOOGLE_CREDENTIALS2;
 
-    // Fallback to GOOGLE_CREDENTIALS
+    // Fallback to GCS_CREDENTIALS_JSON or GOOGLE_CREDENTIALS
     if (!credentialsData) {
-      console.log("GCS_CREDENTIALS_JSON not found, using GOOGLE_CREDENTIALS");
-      credentialsData = process.env.GOOGLE_CREDENTIALS;
+      console.log("GOOGLE_CREDENTIALS2 not found, checking other variables");
+      credentialsData = process.env.GCS_CREDENTIALS_JSON || process.env.GOOGLE_CREDENTIALS;
     } else {
-      console.log("Using GCS_CREDENTIALS_JSON for GCS authentication");
+      console.log("Using GOOGLE_CREDENTIALS2 for GCS authentication");
     }
 
     if (!credentialsData) {

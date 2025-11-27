@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 // 認証情報を環境変数から読み取り、一時ファイルに書き出してそのパスを返すヘルパー関数
 async function setupCredentials() {
-  const credentialsJsonString = process.env.GOOGLE_CREDENTIALS;
+  const credentialsJsonString = process.env.GOOGLE_CREDENTIALS2;
   if (!credentialsJsonString) {
     throw new Error(
       "GOOGLE_CREDENTIALS environment variable is not set. Please configure it in your deployment settings."
