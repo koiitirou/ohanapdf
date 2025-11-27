@@ -3,6 +3,7 @@ import { VertexAI } from "@google-cloud/vertexai";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import { getGCSClient } from "../utils/gcsClient";
 
 // --- タイムアウト設定 ---
 // Vercel Hobby(無料)プラン: 最大 60秒
@@ -30,6 +31,7 @@ async function setupCredentials() {
 
 export async function POST(request) {
   let tempCredFilePath;
+  let gcsFilePaths = []; // GCSから削除するファイルパスを保存
   try {
     // 認証処理を実行
     tempCredFilePath = await setupCredentials();
@@ -71,6 +73,13 @@ export async function POST(request) {
           fileUri: file.fileUri,
         },
       }));
+      
+      // ファイルパスを抽出して後で削除できるように保存
+      gcsFilePaths = gcsUris.map((file) => {
+        const match = file.fileUri.match(/^gs:\/\/[^\/]+\/(.+)$/);
+        return match ? match[1] : null;
+      }).filter(Boolean);
+      console.log(`Extracted ${gcsFilePaths.length} file paths for cleanup`);
     } else {
       // 直接アップロードの場合 (既存ロジック)
       console.log(
@@ -147,6 +156,29 @@ export async function POST(request) {
                 `Failed to delete temporary credentials file: ${tempCredFilePath}`,
                 e
               );
+            }
+          }
+          
+          // GCSファイルを削除
+          if (gcsFilePaths.length > 0) {
+            try {
+              const storage = getGCSClient();
+              const bucketName = process.env.GCS_BUCKET_NAME2;
+              const bucket = storage.bucket(bucketName);
+              
+              await Promise.all(
+                gcsFilePaths.map(async (filePath) => {
+                  try {
+                    await bucket.file(filePath).delete();
+                    console.log(`Deleted GCS file: ${filePath}`);
+                  } catch (err) {
+                    console.error(`Failed to delete GCS file ${filePath}:`, err);
+                  }
+                })
+              );
+              console.log(`GCS cleanup completed. Deleted ${gcsFilePaths.length} files.`);
+            } catch (e) {
+              console.error("Error during GCS cleanup:", e);
             }
           }
         }

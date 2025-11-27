@@ -23,9 +23,8 @@ export default function TermsPage() {
           【重要】本ツールの存在、およびURLは「完全社外秘」です。 家族や友人を含め、組織外部の人間には口外しないでください。
         </p>
         <p>
-          現在は便宜上、外部ネットワークからもアクセス可能となっていますが、あくまで社内業務専用です。<br />
-          <span style={{ fontSize: "0.9rem", color: "#666" }}>※近い将来、セキュリティ強化のため社内ネットワークおよび指定のVPN接続端末以外からはアクセスできなくなる予定です。</span>
-        </p>
+          本ツールは社内業務専用ですので、<strong>指定の業務用ネットワークおよびVPN接続の端末からご利用いただく必要があります</strong>。
+      </p>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
@@ -54,8 +53,8 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>3. 利用における絶対ルール</h2>
         <ol style={{ paddingLeft: "1.5rem" }}>
-          <li style={{ marginBottom: "0.5rem" }}><strong>ブラウザ完結・保存禁止</strong><br />結果はブラウザ画面にのみ表示されます。業務終了後は必ずブラウザ（タブ）を閉じてください。</li>
-          <li style={{ marginBottom: "0.5rem" }}><strong>転載・送信の禁止</strong><br />生成されたテキストを個人メール、個人LINE、個人クラウドなど、指定の基幹システム以外の場所に転送・保存することは厳禁です。</li>
+          <li style={{ marginBottom: "0.5rem" }}><strong>ブラウザ完結・保存禁止</strong><br />結果はブラウザ画面に表示されます。業務終了後は必ずブラウザ（タブ）を閉じ、業務に使用したファイルは削除される必要があります。</li>
+          <li style={{ marginBottom: "0.5rem" }}><strong>転載・送信の禁止</strong><br />生成されたテキストを個人の連絡先などの、指定の社内システム以外に転送・保存することは厳禁です。</li>
           <li><strong>ダブルチェック</strong><br />AIは事実と異なる回答を生成することがあります。必ず原典となる資料と照らし合わせ、最終的な責任は使用者が持ってください。</li>
         </ol>
       </section>
@@ -103,9 +102,8 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>6. 今後の展望と本ツールの位置づけ</h2>
         <p>
-          将来的にOSや電子ソフト自体にAIが標準搭載されることになれば、本ツールのような機能は当たり前になるでしょう。
-        </p>
-        <p style={{ marginTop: "1rem" }}>
+          将来的にOSや電子ソフト自体にAIが標準搭載されることになれば、本ツールのような機能は当たり前になると思われます。
+
           本ツールは、そうした便利な機能が一般的になるまでの<strong>「つなぎのツール」</strong>です。
         </p>
       </section>
