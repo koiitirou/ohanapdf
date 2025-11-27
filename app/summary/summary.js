@@ -442,26 +442,59 @@ export default function SummaryPage() {
     setSummary("");
 
     try {
-      // 1. GCSへアップロード
-      const uploadFormData = new FormData();
-      files.forEach((file) => uploadFormData.append("files", file));
+      // 1. 署名付きURLを取得
+      console.log("Requesting signed URLs for", files.length, "files");
+      const fileMetadata = files.map((file) => ({
+        name: file.name,
+        type: file.type,
+      }));
 
-      const uploadResponse = await fetch("/api/upload-summary", {
+      const urlResponse = await fetch("/api/generate-upload-urls", {
         method: "POST",
-        body: uploadFormData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: fileMetadata }),
       });
 
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json().catch(() => ({}));
+      if (!urlResponse.ok) {
+        const errorData = await urlResponse.json().catch(() => ({}));
         throw new Error(
-          errorData.message || "ファイルのアップロードに失敗しました。"
+          errorData.error || "署名付きURLの取得に失敗しました。"
         );
       }
 
-      const uploadResult = await uploadResponse.json();
-      const gcsUris = uploadResult.uploadedFiles;
+      const { uploadUrls } = await urlResponse.json();
+      console.log("Received", uploadUrls.length, "signed URLs");
 
-      // 2. Vertex AIで生成 (GCS URIを使用)
+      // 2. 各ファイルを並列アップロード（直接GCSへ）
+      console.log("Uploading files directly to GCS...");
+      await Promise.all(
+        uploadUrls.map((urlData, index) =>
+          fetch(urlData.uploadUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": urlData.mimeType,
+            },
+            body: files[index],
+          }).then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Failed to upload ${urlData.fileName}: ${response.statusText}`
+              );
+            }
+            console.log(`Successfully uploaded: ${urlData.fileName}`);
+          })
+        )
+      );
+
+      console.log("All files uploaded successfully to GCS");
+
+      // 3. GCS URIをVertex AIに送信
+      const gcsUris = uploadUrls.map((u) => ({
+        fileUri: u.fileUri,
+        mimeType: u.mimeType,
+        name: u.fileName,
+      }));
+
       const summaryFormData = new FormData();
       summaryFormData.append("prompt", prompt);
       summaryFormData.append("model", selectedModel);
@@ -493,7 +526,7 @@ export default function SummaryPage() {
         setSummary(accumulatedText);
       }
 
-      console.log("Streaming completed successfully (via GCS).");
+      console.log("Streaming completed successfully (via GCS with signed URLs).");
     } catch (err) {
       console.error("Submission error:", err);
       setError(err.message);
