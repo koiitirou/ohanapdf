@@ -8,23 +8,23 @@ export default function TermsPage() {
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem", fontFamily: "sans-serif", lineHeight: "1.6", color: "#333" }}>
       <header style={{ marginBottom: "2rem", borderBottom: "1px solid #eee", paddingBottom: "1rem" }}>
 
-        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem",  }}>【社外秘】業務ツール利用ガイドライン</h1>
+        <h1 style={{ fontSize: "1.5rem", marginTop: "1rem", }}>【社外秘】業務ツール利用ガイドライン</h1>
       </header>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>1. はじめに：本ツールの取り扱いについて</h2>
         <p>
-          本ツールは、当組織の業務効率化のために導入されたものです。 本ツールを安全に活用するためには、皆様の持つ専門的な知識と実務経験が欠かせません。
+          本ツールは、当組織の業務効率化のためにつくられたものです。 本ツールを安全に活用するためには、皆様の持つ専門的な知識と実務経験が欠かせません。
         </p>
         <p>
           つきましては、以下のガイドラインを必ずご確認の上、適正な運用にご協力をお願いいたします。
         </p>
-        <p style={{ marginTop: "1rem", fontWeight: "bold"}}>
+        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>
           【重要】本ツールの存在、およびURLは「完全社外秘」です。 家族や友人を含め、組織外部の人間には口外しないでください。
         </p>
         <p>
           本ツールは社内業務専用ですので、<strong>指定の業務用ネットワークおよびVPN接続の端末からご利用いただく必要があります</strong>。
-      </p>
+        </p>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
@@ -86,7 +86,7 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>5. コストと利用マナーについて</h2>
         <p>
-          本ツールのAIエンジンは、使用量に応じた従量課金制です。 
+          本ツールのAIエンジンは、使用量に応じた従量課金制です。
         </p>
         <ul style={{ listStyleType: "none", paddingLeft: "0", margin: "1rem 0" }}>
           <li>・ 目安コスト:</li>
@@ -95,19 +95,17 @@ export default function TermsPage() {
           <li style={{ paddingLeft: "1rem" }}>o 部署全体での月間想定予算：約 数千 円　〜</li>
         </ul>
         <p>
-          業務外の私的な利用や目的のない乱用は慎むべきですが、業務や操作に慣れるために繰り返し利用することに関しては躊躇する必要はありません。業務効率化を実現することを最優先事項としてください。
+          業務外の私的な利用や目的のない乱用は慎むべきですが、業務や操作に慣れるために繰り返し利用することに関しては躊躇する必要はありませんので、業務効率化を実現することを優先してください。
         </p>
       </section>
 
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.2rem", borderBottom: "2px solid #0070f3", paddingBottom: "0.5rem", marginBottom: "1rem" }}>6. 今後の展望と本ツールの位置づけ</h2>
         <p>
-          将来的にOSや電子ソフト自体にAIが標準搭載されることになれば、本ツールのような機能は当たり前になると思われます。
-
-          本ツールは、そうした便利な機能が一般的になるまでの<strong>「つなぎのツール」</strong>です。
+          将来的にOSや電子ソフト自体にAIが標準搭載されることになれば、本ツールのような機能は当たり前になると思われますので、それまでの<strong>「つなぎのツール」</strong>です。
         </p>
       </section>
-      
+
 
     </div>
   );
