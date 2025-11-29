@@ -4,4 +4,4 @@ export const MODEL_OPTIONS = [
   { id: "gemini-2.5-flash-lite", label: "Flash Lite (高速)", desc: "コスト重視" },
 ];
 
-export const DEFAULT_MODEL = "gemini-2.5-flash-lite";
+export const DEFAULT_MODEL = "gemini-2.5-pro";

@@ -18,13 +18,10 @@ export async function GET(request) {
           const [content] = await file.download();
           const metadata = JSON.parse(content.toString());
           
-          // Filter out items older than 24 hours
-          if (now - metadata.timestamp > ONE_DAY_MS) {
-            // Optionally delete the file here (lazy cleanup)
-            // await file.delete(); 
-            // Also delete audio file: await bucket.file(metadata.audioPath).delete();
-            return null;
-          }
+          // Filter out items older than 24 hours - REMOVED per user request
+          // if (now - metadata.timestamp > ONE_DAY_MS) {
+          //   return null;
+          // }
 
           // Return only necessary info for the list
           return {
@@ -91,6 +88,8 @@ export async function POST(request) {
 
     return NextResponse.json({
       summary: metadata.summary,
+      transcription: metadata.transcription,
+      correctedSummary: metadata.correctedSummary,
       audioUrl: audioUrl,
     });
   } catch (error) {

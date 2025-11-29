@@ -29,9 +29,26 @@ export async function POST(request) {
     } else if (file.type === "text/plain") {
       uploadPath = `upload/file1.txt`;
       blob = bucket.file(uploadPath);
-    } else if (file.type === "audio/x-m4a" || file.type === "audio/mp4") {
+    } else if (
+      file.type === "audio/x-m4a" || 
+      file.type === "audio/mp4" || 
+      file.type === "audio/mpeg" || 
+      file.type === "audio/wav" || 
+      file.type === "audio/ogg" || 
+      file.type === "audio/flac"
+    ) {
       id = Date.now().toString();
-      uploadPath = `phone/${id}.m4a`;
+      // Determine file extension from MIME type or filename
+      let extension = "m4a";
+      if (file.type === "audio/mpeg") extension = "mp3";
+      else if (file.type === "audio/wav") extension = "wav";
+      else if (file.type === "audio/ogg") extension = "ogg";
+      else if (file.type === "audio/flac") extension = "flac";
+      else if (file.name) {
+        const match = file.name.match(/\.([^.]+)$/);
+        if (match) extension = match[1];
+      }
+      uploadPath = `phone/${id}.${extension}`;
       metadataPath = `phone/metadata/${id}.json`;
       blob = bucket.file(uploadPath);
     } else {
@@ -65,10 +82,17 @@ export async function POST(request) {
       });
     }
 
+    // Generate signed URL for immediate playback (valid for 1 hour)
+    const [audioUrl] = await blob.getSignedUrl({
+      action: "read",
+      expires: Date.now() + 60 * 60 * 1000,
+    });
+
     return NextResponse.json(
       {
         message: "ファイルのアップロードに成功しました",
         fileUrl: `gs://${process.env.GCS_BUCKET_NAME}/${uploadPath}`,
+        audioUrl: audioUrl, // Return signed URL
         id: id, // Return ID for subsequent calls
       },
       { status: 200 }

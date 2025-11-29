@@ -3,7 +3,7 @@ import { getGCSClient } from "../utils/gcsClient";
 
 export async function POST(request) {
   try {
-    const { id, summary } = await request.json();
+    const { id, summary, transcription, correctedSummary } = await request.json();
 
     if (!id || !summary) {
       return NextResponse.json(
@@ -29,8 +29,10 @@ export async function POST(request) {
     const [content] = await file.download();
     const metadata = JSON.parse(content.toString());
 
-    // Update summary
+    // Update fields
     metadata.summary = summary;
+    if (transcription !== undefined) metadata.transcription = transcription;
+    if (correctedSummary !== undefined) metadata.correctedSummary = correctedSummary;
 
     // Save back to GCS
     await file.save(JSON.stringify(metadata), {

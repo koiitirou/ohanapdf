@@ -90,6 +90,11 @@ const TopPage = () => {
               <p>(旧: pdfProcess.js)</p> */}
             </Link>
           </li>
+          <li>
+            <Link href="/phone" className={styles.link}>
+              <h2 style={{ color: "grey", fontSize: "1em" }}>テスト</h2>
+            </Link>
+          </li>
 
         </ul>
       </nav>
