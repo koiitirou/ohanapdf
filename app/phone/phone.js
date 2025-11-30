@@ -407,6 +407,36 @@ export default function Phone() {
     }
   };
 
+  const handleAdminCleanup = async () => {
+    const pwd = prompt("管理者パスワードを入力してください");
+    if (!pwd) return;
+
+    try {
+      const res = await fetch("/api/admin/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pwd }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        fetchHistory(); // Refresh history
+        setResult(""); // Clear current result
+        setResultTitle("");
+        setAudioUrl("");
+        setTranscription("");
+        setCorrectedSummary("");
+        setCurrentId(null);
+      } else {
+        alert(data.error || "削除に失敗しました");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("エラーが発生しました");
+    }
+  };
+
   const getRelativeTime = (timestamp) => {
     const now = Date.now();
     const diff = now - timestamp;
@@ -678,6 +708,28 @@ export default function Phone() {
             </>
           )}
           <p className="text-xs text-slate-500 mt-4 text-center">※データと履歴は24時間経過すると削除されます。</p>
+          
+
+          
+
+        </div>
+
+        <div className="mt-8 flex justify-end w-full">
+          <button
+            onClick={handleAdminCleanup}
+            className={styles.submitButton}
+            style={{ 
+              width: "auto", 
+              padding: "0.5rem 1rem", 
+              backgroundColor: "#f1f5f9", 
+              color: "#1e293b",
+              border: "1px solid #cbd5e1",
+              whiteSpace: "nowrap",
+              float: "right"
+            }}
+          >
+            履歴を全て削除
+          </button>
         </div>
 
       </main>
