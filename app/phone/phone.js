@@ -221,7 +221,9 @@ export default function Phone() {
       setTranscription("");
       setCorrectedSummary("");
       setCurrentId(id);
+      setSelectedHistoryId(id); // Select the new item in history list
       setPollingId(id); // Start polling
+      setHistoryPassword(password); // Set history password for auto-refresh/manual refresh
       
       // Refresh history to show the new item
       fetchHistory();
@@ -456,16 +458,7 @@ export default function Phone() {
           />
         </div>
 
-        <div className={styles.inputGroup}>
-          <label className={styles.label}>パスワード (必須・4文字以上)</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.textInput}
-            placeholder="パスワードを入力してください"
-          />
-        </div>
+
 
         <div className={styles.inputGroup}>
           <label className={styles.label}>モデル選択</label>
@@ -479,6 +472,17 @@ export default function Phone() {
             accept=".m4a,.mp3,.wav,.ogg,.flac,audio/mp4,audio/x-m4a,audio/mpeg,audio/wav,audio/ogg,audio/flac"
             onChange={handleFileChange}
             className={styles.fileInput}
+          />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>パスワード (必須・4文字以上)</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={styles.textInput}
+            placeholder="パスワードを入力してください"
           />
         </div>
 
