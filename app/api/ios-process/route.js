@@ -6,9 +6,13 @@ import { generatePrompt } from "../../utils/phonePrompt";
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    const file = formData.get("file");
-    const name = formData.get("name") || new Date().toLocaleString("ja-JP");
-    const password = formData.get("password") || "";
+    
+    // Debug logging
+    console.log("iOS Process Request Keys:", [...formData.keys()]);
+
+    const file = formData.get("file") || formData.get("File");
+    const name = formData.get("name") || formData.get("Name") || new Date().toLocaleString("ja-JP");
+    const password = formData.get("password") || formData.get("Password") || "";
 
     if (!file) {
       return NextResponse.json(
