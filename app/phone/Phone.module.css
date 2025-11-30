@@ -186,15 +186,15 @@
 
 .copyButton {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 0;
+  right: 0;
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 500;
   background-color: #e2e8f0;
   color: #475569;
   border: none;
-  border-radius: 0.375rem;
+  border-radius: 0 0.5rem 0 0.5rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }

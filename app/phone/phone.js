@@ -459,7 +459,7 @@ export default function Phone() {
               結果: {resultTitle && <span className="text-base font-normal text-slate-500 ml-2">{resultTitle}</span>}
               <button
                 onClick={() => handleHistoryUnlock(currentId)}
-                className="ml-4 text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded border border-slate-300 transition-colors"
+                className="ml-4 text-xs bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-700 px-3 py-1 rounded-full border border-slate-200 transition-all shadow-sm"
                 title="結果を再取得"
               >
                 更新
@@ -600,7 +600,7 @@ export default function Phone() {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => setShowAllHistory(true)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="w-full py-2 text-sm text-slate-600 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
                   >
                     全ての履歴を表示 ({history.length}件)
                   </button>
