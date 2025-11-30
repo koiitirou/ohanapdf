@@ -398,6 +398,14 @@ export default function Phone() {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1 className={styles.title}>音声処理デモ</h1>
+          <a 
+            href="https://www.icloud.com/shortcuts/9ee936c40c204e75805b6734dad6ac7c" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={styles.shortcutLink}
+          >
+            📱 iOSショートカットをダウンロード
+          </a>
         </div>
         
         {/* Input Fields */}

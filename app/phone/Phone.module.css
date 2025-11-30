@@ -41,6 +41,20 @@
   color: #1e293b; /* slate-800 */
 }
 
+.shortcutLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #3b82f6; /* blue-500 */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.shortcutLink:hover {
+  text-decoration: underline;
+  color: #2563eb; /* blue-600 */
+}
+
 /* Input Fields */
 .inputGroup {
   margin-bottom: 1.5rem;
