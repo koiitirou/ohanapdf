@@ -14,9 +14,31 @@ export async function POST(request) {
     const name = formData.get("name") || formData.get("Name") || new Date().toLocaleString("ja-JP");
     const password = formData.get("password") || formData.get("Password") || "";
 
+    // Debug logging for file
+    console.log("File type:", typeof file);
+    if (file) {
+      console.log("File name:", file.name);
+      console.log("File size:", file.size);
+      console.log("File constructor:", file.constructor.name);
+    }
+
     if (!file) {
       return NextResponse.json(
         { message: "ファイルがアップロードされていません" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof file === "string") {
+      return NextResponse.json(
+        { message: "ファイルがテキストとして送信されています。ショートカットの設定で「ファイル」または「メディア」を選択してください。" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof file.arrayBuffer !== "function") {
+      return NextResponse.json(
+        { message: "無効なファイル形式です。ファイルオブジェクトではありません。" },
         { status: 400 }
       );
     }
