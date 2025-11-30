@@ -2,13 +2,14 @@
 
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./Phone.module.css";
 import { MODEL_OPTIONS, DEFAULT_MODEL } from "../utils/modelConfig";
 import ModelSelector from "../components/ModelSelector";
 import { generatePrompt } from "../utils/phonePrompt";
 
 export default function Phone() {
+  const router = useRouter();
   const [file, setFile] = useState(null);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -47,6 +48,13 @@ export default function Phone() {
         if (pwd) {
             setHistoryPassword(pwd);
             handleHistoryUnlock(id, pwd);
+            
+            // Remove password from URL for security
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete("password");
+            router.replace(`/phone?${newParams.toString()}`);
+        } else {
+            handleHistoryUnlock(id);
         }
 
         // Scroll to item
