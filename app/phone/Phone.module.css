@@ -161,6 +161,9 @@
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .resultContent {

@@ -501,20 +501,29 @@ export default function Phone() {
           <div id="result-section" className={styles.resultSection}>
             <h2 className={styles.resultTitle}>
               結果: {resultTitle && <span className="text-base font-normal text-slate-500 ml-2">{resultTitle}</span>}
-              <div className="ml-auto flex gap-2">
+              <div className="flex gap-4 items-center">
                 <button
                   onClick={() => handleHistoryUnlock(currentId)}
-                  className="text-xs bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 hover:text-blue-900 px-4 py-1.5 rounded-lg border border-blue-200 hover:border-blue-300 transition-all shadow-sm hover:shadow font-medium"
+                  className={styles.submitButton}
+                  style={{ 
+                    width: "auto", 
+                    padding: "0.5rem 1rem", 
+                    backgroundColor: "#f1f5f9", 
+                    color: "#1e293b",
+                    border: "1px solid #cbd5e1",
+                    margin:"10px"
+                  }}
                   title="結果を再取得"
                 >
-                  🔄 更新
+                  更新
                 </button>
                 <button
                   onClick={handleDeleteCurrent}
-                  className="text-xs bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 hover:text-red-900 px-4 py-1.5 rounded-lg border border-red-200 hover:border-red-300 transition-all shadow-sm hover:shadow font-medium"
+                  className={styles.submitButton}
+                  style={{ width: "auto", padding: "0.5rem 1rem", backgroundColor: "#ef4444" }}
                   title="この結果を削除"
                 >
-                  🗑️ 削除
+                  削除
                 </button>
               </div>
             </h2>
