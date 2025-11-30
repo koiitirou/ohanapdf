@@ -188,7 +188,7 @@ export async function POST(request) {
         // Optionally update metadata to show error
         const errorMetadata = {
           ...initialMetadata,
-          summary: "処理中にエラーが発生しました",
+          summary: `エラー: ${error.message}`, // Save actual error message
           status: "error"
         };
         await metadataFile.save(JSON.stringify(errorMetadata), {
