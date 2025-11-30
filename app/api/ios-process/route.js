@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGCSClient } from "../../utils/gcsClient";
+import { getGCSClient } from "../utils/gcsClient";
 import { VertexAI } from "@google-cloud/vertexai";
 import { generatePrompt } from "../../utils/phonePrompt";
 
