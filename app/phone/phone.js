@@ -369,6 +369,42 @@ export default function Phone() {
     }
   };
 
+  const handleDeleteCurrent = async () => {
+    if (!currentId) return;
+    if (!confirm("この結果を削除しますか?")) return;
+    
+    setHistoryLoading(true);
+    try {
+      const res = await fetch("/api/history", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: currentId, password: historyPassword }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "削除に失敗しました");
+        return;
+      }
+
+      alert("削除しました");
+      setResult("");
+      setResultTitle("");
+      setAudioUrl("");
+      setCurrentId("");
+      setSelectedHistoryId(null);
+      setTranscription("");
+      setCorrectedSummary("");
+      fetchHistory();
+      
+    } catch (error) {
+      console.error(error);
+      alert("エラーが発生しました");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   const getRelativeTime = (timestamp) => {
     const now = Date.now();
     const diff = now - timestamp;
@@ -465,13 +501,22 @@ export default function Phone() {
           <div id="result-section" className={styles.resultSection}>
             <h2 className={styles.resultTitle}>
               結果: {resultTitle && <span className="text-base font-normal text-slate-500 ml-2">{resultTitle}</span>}
-              <button
-                onClick={() => handleHistoryUnlock(currentId)}
-                className="ml-auto text-xs bg-gradient-to-br from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 text-slate-600 hover:text-slate-800 px-4 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 transition-all shadow-sm hover:shadow font-medium"
-                title="結果を再取得"
-              >
-                🔄 更新
-              </button>
+              <div className="ml-auto flex gap-2">
+                <button
+                  onClick={() => handleHistoryUnlock(currentId)}
+                  className="text-xs bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 hover:text-blue-900 px-4 py-1.5 rounded-lg border border-blue-200 hover:border-blue-300 transition-all shadow-sm hover:shadow font-medium"
+                  title="結果を再取得"
+                >
+                  🔄 更新
+                </button>
+                <button
+                  onClick={handleDeleteCurrent}
+                  className="text-xs bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 hover:text-red-900 px-4 py-1.5 rounded-lg border border-red-200 hover:border-red-300 transition-all shadow-sm hover:shadow font-medium"
+                  title="この結果を削除"
+                >
+                  🗑️ 削除
+                </button>
+              </div>
             </h2>
             <div className={styles.resultContent}>
               {/* Audio player moved to Transcription section */}
