@@ -30,6 +30,7 @@ export default function Phone() {
   const [currentId, setCurrentId] = useState(null);
 
   const [pollingId, setPollingId] = useState(null);
+  const [showAllHistory, setShowAllHistory] = useState(false);
 
   // Polling effect
   useEffect(() => {
@@ -349,6 +350,8 @@ export default function Phone() {
     }
   };
 
+  const displayedHistory = showAllHistory ? history : history.slice(0, 10);
+
   return (
     <div className={styles.container}>
       <main className={styles.main}>
@@ -483,64 +486,78 @@ export default function Phone() {
           </div>
         )}
 
+
         {/* History Section */}
         <div className={styles.historySection}>
-          <h2 className={styles.historyTitle}>履歴</h2>
+          <h2 className={styles.historyTitle}>履歴 (24時間以内)</h2>
           {history.length === 0 ? (
             <p className="text-slate-500 text-center">履歴はありません</p>
           ) : (
-            <ul className={styles.historyList}>
-              {history.map((item, index) => (
-                <li 
-                  key={item.id} 
-                  className={`${styles.historyItem} ${selectedHistoryId === item.id ? styles.selected : ''}`}
-                >
-                  <div 
-                    className={styles.historyItemHeader}
-                    onClick={() => handleHistoryClick(item)}
+            <>
+              <ul className={styles.historyList}>
+                {displayedHistory.map((item, index) => (
+                  <li 
+                    key={item.id} 
+                    className={`${styles.historyItem} ${selectedHistoryId === item.id ? styles.selected : ''}`}
                   >
-                    <span className={styles.historyName}>
-                      <span className="mr-2 text-slate-400 font-normal">{index + 1}.</span>
-                      {item.name}
-                    </span>
-                    <span className={styles.historyDate}>
-                      {getRelativeTime(item.timestamp)}
-                    </span>
-                  </div>
-                  
-                  {selectedHistoryId === item.id && (
-                    <div className={styles.passwordPrompt}>
-                      <div className="flex gap-2">
-                        <input
-                          type="password"
-                          placeholder={item.hasPassword ? "パスワードを入力" : "パスワードなし"}
-                          value={historyPassword}
-                          onChange={(e) => setHistoryPassword(e.target.value)}
-                          className={styles.textInput}
-                          style={{ flex: 1 }}
-                        />
-                        <button
-                          onClick={() => handleHistoryUnlock(item.id)}
-                          disabled={historyLoading}
-                          className={styles.submitButton}
-                          style={{ width: "auto", padding: "0.5rem 1rem", margin: "10px" }}
-                        >
-                          {historyLoading ? "..." : "表示"}
-                        </button>
-                        <button
-                          onClick={() => handleHistoryDelete(item.id)}
-                          disabled={historyLoading}
-                          className={styles.submitButton}
-                          style={{ width: "auto", padding: "0.5rem 1rem", backgroundColor: "#ef4444", margin: "10px" }}
-                        >
-                          {historyLoading ? "..." : "削除"}
-                        </button>
-                      </div>
+                    <div 
+                      className={styles.historyItemHeader}
+                      onClick={() => handleHistoryClick(item)}
+                    >
+                      <span className={styles.historyName}>
+                        <span className="mr-2 text-slate-400 font-normal">{index + 1}.</span>
+                        {item.name}
+                      </span>
+                      <span className={styles.historyDate}>
+                        {getRelativeTime(item.timestamp)}
+                      </span>
                     </div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    
+                    {selectedHistoryId === item.id && (
+                      <div className={styles.passwordPrompt}>
+                        <div className="flex gap-2">
+                          <input
+                            type="password"
+                            placeholder={item.hasPassword ? "パスワードを入力" : "パスワードなし"}
+                            value={historyPassword}
+                            onChange={(e) => setHistoryPassword(e.target.value)}
+                            className={styles.textInput}
+                            style={{ flex: 1 }}
+                          />
+                          <button
+                            onClick={() => handleHistoryUnlock(item.id)}
+                            disabled={historyLoading}
+                            className={styles.submitButton}
+                            style={{ width: "auto", padding: "0.5rem 1rem", margin: "10px" }}
+                          >
+                            {historyLoading ? "..." : "表示"}
+                          </button>
+                          <button
+                            onClick={() => handleHistoryDelete(item.id)}
+                            disabled={historyLoading}
+                            className={styles.submitButton}
+                            style={{ width: "auto", padding: "0.5rem 1rem", backgroundColor: "#ef4444", margin: "10px" }}
+                          >
+                            {historyLoading ? "..." : "削除"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              
+              {!showAllHistory && history.length > 10 && (
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => setShowAllHistory(true)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    全ての履歴を表示 ({history.length}件)
+                  </button>
+                </div>
+              )}
+            </>
           )}
           <p className="text-xs text-slate-500 mt-4 text-center">※音声データは一定期間で削除される可能性がありますが、履歴は残ります</p>
         </div>

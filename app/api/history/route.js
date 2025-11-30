@@ -18,10 +18,10 @@ export async function GET(request) {
           const [content] = await file.download();
           const metadata = JSON.parse(content.toString());
           
-          // Filter out items older than 24 hours - REMOVED per user request
-          // if (now - metadata.timestamp > ONE_DAY_MS) {
-          //   return null;
-          // }
+          // Filter out items older than 24 hours
+          if (now - metadata.timestamp > ONE_DAY_MS) {
+            return null;
+          }
 
           // Return only necessary info for the list
           return {
@@ -37,11 +37,10 @@ export async function GET(request) {
       })
     );
 
-    // Filter out nulls, sort by timestamp desc, and limit to 10
+    // Filter out nulls, sort by timestamp desc
     const sortedList = historyList
       .filter((item) => item !== null)
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, 10);
+      .sort((a, b) => b.timestamp - a.timestamp);
 
     return NextResponse.json({ history: sortedList });
   } catch (error) {
