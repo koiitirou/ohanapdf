@@ -110,7 +110,7 @@ export default function Phone() {
 
       setStatus("AIで処理中...");
 
-      // 2. Process with Vertex AI
+      // 2. Process with Vertex AI (Async)
       const processRes = await fetch("/api/process-audio", {
         method: "POST",
         headers: {
@@ -120,46 +120,24 @@ export default function Phone() {
           gcsUri: gcsUri,
           prompt: generatePrompt(),
           model: selectedModel,
+          id: id,
+          name: name,
+          password: password
         }),
       });
 
       if (!processRes.ok) {
         const errorData = await processRes.json();
-        throw new Error(errorData.error || "処理に失敗しました");
+        throw new Error(errorData.error || "処理開始に失敗しました");
       }
 
-      const processData = await processRes.json();
-      const fullResult = processData.result;
-      
-      // Split result and transcription
-      const parts = fullResult.split("--TRANSCRIPTION--");
-      const summaryText = parts[0].trim();
-      let transcriptionText = parts.length > 1 ? parts[1].trim() : "";
-
-      // Post-process transcription to ensure line breaks
-      // Look for patterns like "Name:" or "Name：" that are NOT at the start of a line
-      transcriptionText = transcriptionText.replace(/([^\n])(\s*(?:施設|クリニック|Aさん|Bさん|[^\s]+?)[：:])/g, '$1\n$2');
-
-      setResult(summaryText);
-      setTranscription(transcriptionText);
-      setCorrectedSummary(""); // Initialize corrected summary as empty
-      setResultTitle(name); // Set title for fresh result
+      setStatus("バックグラウンドで処理を開始しました。履歴を確認してください。");
+      setResult("処理中... (履歴から確認できます)");
+      setTranscription("");
+      setCorrectedSummary("");
       setCurrentId(id);
-      setStatus("完了！");
-
-      // 3. Save result to metadata
-      await fetch("/api/save-result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id, 
-          summary: summaryText,
-          transcription: transcriptionText,
-          correctedSummary: "" // Save as empty initially
-        }),
-      });
-
-      // Refresh history
+      
+      // Refresh history to show the new item
       fetchHistory();
 
     } catch (error) {
@@ -298,14 +276,18 @@ export default function Phone() {
     const hour = 60 * minute;
     const day = 24 * hour;
 
+    const date = new Date(timestamp);
+    const timeString = date.toLocaleTimeString("ja-JP", { hour: '2-digit', minute: '2-digit' });
+    const dateString = date.toLocaleDateString("ja-JP", { month: 'numeric', day: 'numeric' });
+
     if (diff < minute) {
       return "たった今";
     } else if (diff < hour) {
       return `${Math.floor(diff / minute)}分前`;
     } else if (diff < day) {
-      return `${Math.floor(diff / hour)}時間前`;
+      return `${Math.floor(diff / hour)}時間前 (${timeString})`;
     } else {
-      return "1日前";
+      return `${dateString} ${timeString}`;
     }
   };
 
