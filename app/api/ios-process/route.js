@@ -206,7 +206,7 @@ export async function POST(request) {
     });
 
     const origin = request.nextUrl.origin;
-    const resultUrl = `${origin}/phone?id=${id}`;
+    const resultUrl = `${origin}/phone?id=${id}&password=${password}`;
 
     return NextResponse.json(
       {

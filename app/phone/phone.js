@@ -35,12 +35,20 @@ export default function Phone() {
   const searchParams = useSearchParams();
 
   // Handle deep link
+  // Handle deep link
   useEffect(() => {
     const id = searchParams.get("id");
+    const pwd = searchParams.get("password");
     if (id && history.length > 0) {
       const targetItem = history.find(h => h.id === id);
       if (targetItem) {
         setSelectedHistoryId(id);
+        
+        if (pwd) {
+            setHistoryPassword(pwd);
+            handleHistoryUnlock(id, pwd);
+        }
+
         // Scroll to item
         setTimeout(() => {
           const element = document.getElementById(`history-${id}`);
@@ -239,13 +247,14 @@ export default function Phone() {
     }
   };
 
-  const handleHistoryUnlock = async (id) => {
+  const handleHistoryUnlock = async (id, pwdOverride = null) => {
     setHistoryLoading(true);
+    const pwd = pwdOverride !== null ? pwdOverride : historyPassword;
     try {
       const res = await fetch("/api/history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, password: historyPassword }),
+        body: JSON.stringify({ id, password: pwd }),
       });
 
       if (!res.ok) {
