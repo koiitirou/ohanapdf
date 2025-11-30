@@ -1,10 +1,28 @@
-import { NextResponse } from "next/server";
-import { getGCSClient } from "../utils/gcsClient";
-import { VertexAI } from "@google-cloud/vertexai";
-import { generatePrompt } from "../../utils/phonePrompt";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
+
+// Helper to setup credentials from env var
+async function setupCredentials() {
+  const credentialsJsonString = process.env.GOOGLE_CREDENTIALS;
+  if (!credentialsJsonString) {
+    throw new Error(
+      "GOOGLE_CREDENTIALS environment variable is not set."
+    );
+  }
+
+  const tempDir = os.tmpdir();
+  const filePath = path.join(tempDir, `creds-${Date.now()}.json`);
+  await fs.writeFile(filePath, credentialsJsonString);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath;
+  return filePath;
+}
 
 export async function POST(request) {
+  let tempCredFilePath;
   try {
+    tempCredFilePath = await setupCredentials();
+
     const formData = await request.formData();
     
     // Debug logging
@@ -81,7 +99,7 @@ export async function POST(request) {
 
     // 2. Process with Vertex AI
     const vertexAI = new VertexAI({
-      project: process.env.GOOGLE_CLOUD_PROJECT,
+      project: "api1-346604",
       location: process.env.GOOGLE_CLOUD_LOCATION || "asia-northeast1",
     });
 
@@ -158,5 +176,13 @@ export async function POST(request) {
       { message: "エラーが発生しました", error: error.message },
       { status: 500 }
     );
+  } finally {
+    if (tempCredFilePath) {
+      try {
+        await fs.unlink(tempCredFilePath);
+      } catch (e) {
+        console.error("Failed to delete temp creds:", e);
+      }
+    }
   }
 }
