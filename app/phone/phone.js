@@ -74,7 +74,14 @@ export default function Phone() {
           // Since the user just uploaded, 'password' state should be valid.
           // If the user navigated away and came back, they would use 'handleHistoryUnlock' which sets 'historyPassword'.
           
-          const pwd = currentId === pollingId ? password : historyPassword;
+          // Determine password to use
+          let pwd = password;
+          if (selectedHistoryId === pollingId) {
+            pwd = historyPassword;
+          } else if (currentId === pollingId && historyPassword) {
+             // Fallback: if currentId matches and we have historyPassword (e.g. deep link case)
+             pwd = historyPassword;
+          }
 
           const res = await fetch("/api/history", {
             method: "POST",
@@ -450,6 +457,13 @@ export default function Phone() {
           <div id="result-section" className={styles.resultSection}>
             <h2 className={styles.resultTitle}>
               結果: {resultTitle && <span className="text-base font-normal text-slate-500 ml-2">{resultTitle}</span>}
+              <button
+                onClick={() => handleHistoryUnlock(currentId)}
+                className="ml-4 text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded border border-slate-300 transition-colors"
+                title="結果を再取得"
+              >
+                更新
+              </button>
             </h2>
             <div className={styles.resultContent}>
               {/* Audio player moved to Transcription section */}
