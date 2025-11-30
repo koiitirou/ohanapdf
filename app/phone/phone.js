@@ -2,6 +2,7 @@
 
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "./Phone.module.css";
 import { MODEL_OPTIONS, DEFAULT_MODEL } from "../utils/modelConfig";
 import ModelSelector from "../components/ModelSelector";
@@ -31,6 +32,25 @@ export default function Phone() {
 
   const [pollingId, setPollingId] = useState(null);
   const [showAllHistory, setShowAllHistory] = useState(false);
+  const searchParams = useSearchParams();
+
+  // Handle deep link
+  useEffect(() => {
+    const id = searchParams.get("id");
+    if (id && history.length > 0) {
+      const targetItem = history.find(h => h.id === id);
+      if (targetItem) {
+        setSelectedHistoryId(id);
+        // Scroll to item
+        setTimeout(() => {
+          const element = document.getElementById(`history-${id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 100);
+      }
+    }
+  }, [searchParams, history]);
 
   // Polling effect
   useEffect(() => {
@@ -256,7 +276,12 @@ export default function Phone() {
       }
 
       // Scroll to result
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        const element = document.getElementById("result-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
       
     } catch (error) {
       console.error(error);
@@ -413,7 +438,7 @@ export default function Phone() {
 
         {/* Result Section */}
         {(result || audioUrl) && (
-          <div className={styles.resultSection}>
+          <div id="result-section" className={styles.resultSection}>
             <h2 className={styles.resultTitle}>
               結果: {resultTitle && <span className="text-base font-normal text-slate-500 ml-2">{resultTitle}</span>}
             </h2>
@@ -498,6 +523,7 @@ export default function Phone() {
                 {displayedHistory.map((item, index) => (
                   <li 
                     key={item.id} 
+                    id={`history-${item.id}`}
                     className={`${styles.historyItem} ${selectedHistoryId === item.id ? styles.selected : ''}`}
                   >
                     <div 
@@ -559,7 +585,7 @@ export default function Phone() {
               )}
             </>
           )}
-          <p className="text-xs text-slate-500 mt-4 text-center">※音声データは一定期間で削除される可能性がありますが、履歴は残ります</p>
+          <p className="text-xs text-slate-500 mt-4 text-center">※データと履歴は24時間経過すると削除されます。</p>
         </div>
 
       </main>

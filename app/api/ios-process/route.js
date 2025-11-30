@@ -205,11 +205,15 @@ export async function POST(request) {
       }
     });
 
+    const origin = request.nextUrl.origin;
+    const resultUrl = `${origin}/phone?id=${id}`;
+
     return NextResponse.json(
       {
-        message: "アップロード完了。バックグラウンドで処理を開始しました。",
+        message: `アップロード完了。結果はこちら: ${resultUrl}`,
         id: id,
-        status: "processing"
+        status: "processing",
+        url: resultUrl
       },
       { status: 200 }
     );
