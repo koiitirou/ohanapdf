@@ -91,6 +91,7 @@ export async function POST(request) {
       transcription: metadata.transcription,
       correctedSummary: metadata.correctedSummary,
       audioUrl: audioUrl,
+      status: metadata.status, // Return status for polling
     });
   } catch (error) {
     console.error("Error retrieving history item:", error);

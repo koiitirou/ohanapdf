@@ -29,6 +29,53 @@ export default function Phone() {
   const [correctedSummary, setCorrectedSummary] = useState("");
   const [currentId, setCurrentId] = useState(null);
 
+  const [pollingId, setPollingId] = useState(null);
+
+  // Polling effect
+  useEffect(() => {
+    let interval;
+    if (pollingId) {
+      interval = setInterval(async () => {
+        try {
+          // We need the password for the polling ID. 
+          // If it's the current upload, we have 'password' state.
+          // If it's a history item, we might have 'historyPassword'.
+          // For simplicity, let's assume we use the current 'password' state if it matches, 
+          // or we need to store the password for the polling ID.
+          // Since the user just uploaded, 'password' state should be valid.
+          // If the user navigated away and came back, they would use 'handleHistoryUnlock' which sets 'historyPassword'.
+          
+          const pwd = currentId === pollingId ? password : historyPassword;
+
+          const res = await fetch("/api/history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: pollingId, password: pwd }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === "completed") {
+              setResult(data.summary);
+              setTranscription(data.transcription || "");
+              setCorrectedSummary(data.correctedSummary || "");
+              setAudioUrl(data.audioUrl);
+              setStatus("完了！");
+              setPollingId(null); // Stop polling
+              fetchHistory(); // Refresh list
+            } else if (data.status === "error") {
+              setStatus("エラーが発生しました");
+              setPollingId(null);
+            }
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
+        }
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [pollingId, password, historyPassword, currentId]);
+
   // Set default name on mount
   useEffect(() => {
     const now = new Date();
@@ -62,6 +109,7 @@ export default function Phone() {
       setTranscription("");
       setCorrectedSummary("");
       setCurrentId(null);
+      setPollingId(null);
     }
   };
 
@@ -85,6 +133,7 @@ export default function Phone() {
     setTranscription("");
     setCorrectedSummary("");
     setCurrentId(null);
+    setPollingId(null);
 
     try {
       // 1. Upload to GCS with metadata
@@ -131,11 +180,12 @@ export default function Phone() {
         throw new Error(errorData.error || "処理開始に失敗しました");
       }
 
-      setStatus("バックグラウンドで処理を開始しました。履歴を確認してください。");
-      setResult("処理中... (履歴から確認できます)");
+      setStatus("バックグラウンドで処理を開始しました。完了すると自動で表示されます。");
+      setResult("処理中... (完了すると自動更新されます)");
       setTranscription("");
       setCorrectedSummary("");
       setCurrentId(id);
+      setPollingId(id); // Start polling
       
       // Refresh history to show the new item
       fetchHistory();
@@ -189,6 +239,14 @@ export default function Phone() {
       setCorrectedSummary(data.correctedSummary || "");
       setAudioUrl(data.audioUrl);
       setCurrentId(id);
+      
+      if (data.status === "processing") {
+        setStatus("処理中... (完了すると自動更新されます)");
+        setPollingId(id); // Start polling if still processing
+      } else {
+        setStatus("完了");
+        setPollingId(null);
+      }
       
       // Find name from history list
       const item = history.find(h => h.id === id);
@@ -285,7 +343,7 @@ export default function Phone() {
     } else if (diff < hour) {
       return `${Math.floor(diff / minute)}分前`;
     } else if (diff < day) {
-      return `${Math.floor(diff / hour)}時間前 (${timeString})`;
+      return `${Math.floor(diff / hour)}時間前`;
     } else {
       return `${dateString} ${timeString}`;
     }

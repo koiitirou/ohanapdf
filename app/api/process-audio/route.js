@@ -1,4 +1,4 @@
-import { NextResponse, unstable_after } from "next/server";
+import { NextResponse, after } from "next/server";
 import { VertexAI } from "@google-cloud/vertexai";
 import { getGCSClient } from "../utils/gcsClient";
 import fs from "fs/promises";
@@ -71,7 +71,7 @@ export async function POST(request) {
     });
 
     // 2. Schedule Background Processing
-    unstable_after(async () => {
+    after(async () => {
       let tempCredFilePath;
       try {
         console.log(`[Background] Starting processing for ${id}`);
