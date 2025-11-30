@@ -17,7 +17,7 @@ export async function POST(request) {
     }
 
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
     let blob;
     let uploadPath;
     let metadataPath;
@@ -91,7 +91,7 @@ export async function POST(request) {
     return NextResponse.json(
       {
         message: "ファイルのアップロードに成功しました",
-        fileUrl: `gs://${process.env.GCS_BUCKET_NAME}/${uploadPath}`,
+        fileUrl: `gs://ohpdf/${uploadPath}`,
         audioUrl: audioUrl, // Return signed URL
         id: id, // Return ID for subsequent calls
       },

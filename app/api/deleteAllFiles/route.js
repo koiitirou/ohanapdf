@@ -5,7 +5,7 @@ import { getGCSClient } from "../utils/gcsClient";
 export async function POST(request) {
   try {
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
 
     const [files] = await bucket.getFiles({ prefix: "upload/" });
 

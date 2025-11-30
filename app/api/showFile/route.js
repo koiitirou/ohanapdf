@@ -16,7 +16,7 @@ export async function GET(request) {
     }
 
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
     const file = bucket.file(`upload/${filename}`);
 
     const [exists] = await file.exists();

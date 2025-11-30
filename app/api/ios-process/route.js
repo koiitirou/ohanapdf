@@ -71,7 +71,7 @@ export async function POST(request) {
 
     // 1. Upload to GCS (Synchronous part)
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
     
     let extension = "m4a"; // Default
     if (file.type === "audio/mpeg") extension = "mp3";
@@ -96,7 +96,7 @@ export async function POST(request) {
       blobStream.on("finish", resolve).on("error", reject).end(buffer);
     });
 
-    const gcsUri = `gs://${process.env.GCS_BUCKET_NAME}/${uploadPath}`;
+    const gcsUri = `gs://ohpdf/${uploadPath}`;
 
     // 2. Save Initial Metadata (Processing status)
     const initialMetadata = {

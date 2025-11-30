@@ -14,11 +14,7 @@ export async function POST(request) {
         }
 
         const storage = getGCSClient();
-        const bucketName = process.env.GCS_BUCKET_NAME;
-        if (!bucketName) {
-            console.error("GCS_BUCKET_NAME environment variable is not set.");
-            throw new Error("Server configuration error: GCS_BUCKET_NAME missing");
-        }
+        const bucketName = "ohpdf";
         const bucket = storage.bucket(bucketName);
         const uploadedFiles = [];
 

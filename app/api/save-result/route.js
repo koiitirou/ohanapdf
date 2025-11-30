@@ -13,7 +13,7 @@ export async function POST(request) {
     }
 
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
     const metadataPath = `phone/metadata/${id}.json`;
     const file = bucket.file(metadataPath);
 

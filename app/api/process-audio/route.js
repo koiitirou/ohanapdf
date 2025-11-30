@@ -45,7 +45,7 @@ export async function POST(request) {
 
     // 1. Save Initial Metadata (Processing status)
     const storage = getGCSClient();
-    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const bucket = storage.bucket("ohpdf");
     const metadataPath = `phone/metadata/${id}.json`;
     
     // Extract extension from gcsUri for audioPath
