@@ -521,14 +521,7 @@ export default function Phone() {
                 >
                   更新
                 </button>
-                <button
-                  onClick={handleDeleteCurrent}
-                  className={styles.submitButton}
-                  style={{ width: "auto", padding: "0.5rem 1rem", backgroundColor: "#ef4444" }}
-                  title="この結果を削除"
-                >
-                  削除
-                </button>
+
               </div>
             </h2>
             <div className={styles.resultContent}>
@@ -537,7 +530,17 @@ export default function Phone() {
               {/* 1. Generated Summary Section */}
               {result && (
                 <div className={styles.sectionContainer}>
-                  <h3 className={styles.sectionTitle}>生成されたサマリー</h3>
+                  <h3 className={styles.sectionTitle} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    生成されたサマリー
+                    <button
+                      onClick={handleDeleteCurrent}
+                      className={styles.submitButton}
+                      style={{ width: "auto", padding: "0.5rem 1rem", backgroundColor: "#ef4444", fontSize: "0.875rem" }}
+                      title="この結果を削除"
+                    >
+                      削除
+                    </button>
+                  </h3>
                   <div className={styles.resultContent}>
                     <button 
                       onClick={handleCopy} 
