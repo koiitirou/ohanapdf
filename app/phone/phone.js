@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import styles from "./Phone.module.css";
 import { MODEL_OPTIONS, DEFAULT_MODEL } from "../utils/modelConfig";
 import ModelSelector from "../components/ModelSelector";
+import { generatePrompt } from "../utils/phonePrompt";
 
 export default function Phone() {
   const [file, setFile] = useState(null);
