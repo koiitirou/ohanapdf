@@ -1,6 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import { NextResponse, unstable_after } from "next/server"; // Import unstable_after
+import { getGCSClient } from "../utils/gcsClient";
+import { VertexAI } from "@google-cloud/vertexai";
+import { generatePrompt } from "../../utils/phonePrompt";
 
 // Helper to setup credentials from env var
 async function setupCredentials() {
@@ -12,17 +16,14 @@ async function setupCredentials() {
   }
 
   const tempDir = os.tmpdir();
-  const filePath = path.join(tempDir, `creds-${Date.now()}.json`);
+  const filePath = path.join(tempDir, `creds-${Date.now()}-${Math.random().toString(36).substring(7)}.json`);
   await fs.writeFile(filePath, credentialsJsonString);
   process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath;
   return filePath;
 }
 
 export async function POST(request) {
-  let tempCredFilePath;
   try {
-    tempCredFilePath = await setupCredentials();
-
     const formData = await request.formData();
     
     // Debug logging
@@ -68,7 +69,7 @@ export async function POST(request) {
       );
     }
 
-    // 1. Upload to GCS
+    // 1. Upload to GCS (Synchronous part)
     const storage = getGCSClient();
     const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
     
@@ -97,75 +98,118 @@ export async function POST(request) {
 
     const gcsUri = `gs://${process.env.GCS_BUCKET_NAME}/${uploadPath}`;
 
-    // 2. Process with Vertex AI
-    const vertexAI = new VertexAI({
-      project: "api1-346604",
-      location: process.env.GOOGLE_CLOUD_LOCATION || "asia-northeast1",
-    });
-
-    const generativeModel = vertexAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp", // Use a fast model for shortcuts
-      generationConfig: {
-        maxOutputTokens: 8192,
-        temperature: 1,
-        topP: 0.95,
-      },
-    });
-
-    const prompt = generatePrompt();
-
-    const req = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: prompt },
-            {
-              fileData: {
-                mimeType: file.type || "audio/x-m4a", // Default to m4a if unknown
-                fileUri: gcsUri,
-              },
-            },
-          ],
-        },
-      ],
-    };
-
-    const result = await generativeModel.generateContent(req);
-    const response = await result.response;
-    const fullResult = response.candidates[0].content.parts[0].text;
-
-    // Split result and transcription
-    const parts = fullResult.split("--TRANSCRIPTION--");
-    const summaryText = parts[0].trim();
-    let transcriptionText = parts.length > 1 ? parts[1].trim() : "";
-
-    // Post-process transcription
-    transcriptionText = transcriptionText.replace(/([^\n])(\s*(?:施設|クリニック|Aさん|Bさん|[^\s]+?)[：:])/g, '$1\n$2');
-
-    // 3. Save Metadata
-    const metadata = {
+    // 2. Save Initial Metadata (Processing status)
+    const initialMetadata = {
       id,
       name,
       password,
       timestamp: Date.now(),
       audioPath: uploadPath,
-      summary: summaryText,
-      transcription: transcriptionText,
-      correctedSummary: "", // Initialize empty
+      summary: "処理中...", // Indicate processing
+      transcription: "",
+      correctedSummary: "",
+      status: "processing"
     };
 
     const metadataFile = bucket.file(metadataPath);
-    await metadataFile.save(JSON.stringify(metadata), {
+    await metadataFile.save(JSON.stringify(initialMetadata), {
       contentType: "application/json",
+    });
+
+    // 3. Schedule Background Processing
+    unstable_after(async () => {
+      let tempCredFilePath;
+      try {
+        console.log(`[Background] Starting processing for ${id}`);
+        tempCredFilePath = await setupCredentials();
+
+        // Process with Vertex AI
+        const vertexAI = new VertexAI({
+          project: "api1-346604",
+          location: process.env.GOOGLE_CLOUD_LOCATION || "asia-northeast1",
+        });
+
+        const generativeModel = vertexAI.getGenerativeModel({
+          model: "gemini-2.0-flash-exp",
+          generationConfig: {
+            maxOutputTokens: 8192,
+            temperature: 1,
+            topP: 0.95,
+          },
+        });
+
+        const prompt = generatePrompt();
+
+        const req = {
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: prompt },
+                {
+                  fileData: {
+                    mimeType: file.type || "audio/x-m4a",
+                    fileUri: gcsUri,
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        const result = await generativeModel.generateContent(req);
+        const response = await result.response;
+        const fullResult = response.candidates[0].content.parts[0].text;
+
+        // Split result and transcription
+        const parts = fullResult.split("--TRANSCRIPTION--");
+        const summaryText = parts[0].trim();
+        let transcriptionText = parts.length > 1 ? parts[1].trim() : "";
+
+        // Post-process transcription
+        transcriptionText = transcriptionText.replace(/([^\n])(\s*(?:施設|クリニック|Aさん|Bさん|[^\s]+?)[：:])/g, '$1\n$2');
+
+        // Update Metadata with Result
+        const finalMetadata = {
+          ...initialMetadata,
+          summary: summaryText,
+          transcription: transcriptionText,
+          status: "completed"
+        };
+
+        await metadataFile.save(JSON.stringify(finalMetadata), {
+          contentType: "application/json",
+        });
+        
+        console.log(`[Background] Completed processing for ${id}`);
+
+      } catch (error) {
+        console.error(`[Background] Error processing ${id}:`, error);
+        // Optionally update metadata to show error
+        const errorMetadata = {
+          ...initialMetadata,
+          summary: "処理中にエラーが発生しました",
+          status: "error"
+        };
+        await metadataFile.save(JSON.stringify(errorMetadata), {
+          contentType: "application/json",
+        });
+      } finally {
+        if (tempCredFilePath) {
+          try {
+            await fs.unlink(tempCredFilePath);
+          } catch (e) {
+            console.error("Failed to delete temp creds:", e);
+          }
+        }
+      }
     });
 
     return NextResponse.json(
       {
-        message: "処理が完了しました",
+        message: "アップロード完了。バックグラウンドで処理を開始しました。",
         id: id,
-        summary: summaryText,
-        transcription: transcriptionText,
+        status: "processing"
       },
       { status: 200 }
     );
@@ -176,13 +220,5 @@ export async function POST(request) {
       { message: "エラーが発生しました", error: error.message },
       { status: 500 }
     );
-  } finally {
-    if (tempCredFilePath) {
-      try {
-        await fs.unlink(tempCredFilePath);
-      } catch (e) {
-        console.error("Failed to delete temp creds:", e);
-      }
-    }
   }
 }
