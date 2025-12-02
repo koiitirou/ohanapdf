@@ -78,18 +78,13 @@ const TopPage = () => {
               <h2>レシピチェッカー（差分確認） &rarr;</h2>
             </Link>
           </li>
-          <li>
-            {/* 日付フィルタリング版 へのリンク */}
+          {/* <li>
             <Link href="/prescription" className={styles.link}>
               <h2 style={{ color: "grey", fontSize: "1em" }}>
                 最古日フィルター &rarr;
               </h2>
-              {/* <p>
-                PDFのみをアップロードし、各IDの最も古い処方日のページのみを含むPDFを直接ダウンロードします。
-              </p>
-              <p>(旧: pdfProcess.js)</p> */}
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link href="/phone" className={styles.link}>
               <h2 style={{ color: "grey", fontSize: "1em" }}>テスト</h2>
