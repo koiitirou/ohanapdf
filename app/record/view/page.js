@@ -1,10 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import styles from "../Record.module.css";
 
 export default function RecordView() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <RecordContent />
+    </Suspense>
+  );
+}
+
+function RecordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const roomId = searchParams.get("room");
