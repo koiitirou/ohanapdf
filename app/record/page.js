@@ -49,7 +49,7 @@ export default function RecordLanding() {
     <div className={styles.container}>
       <main className={`${styles.main} ${styles.landingCard}`}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Ohana Record</h1>
+          <h1 className={styles.title}>録音要約</h1>
           <p className={styles.subtitle}>PCで録音結果を確認する</p>
         </div>
 
