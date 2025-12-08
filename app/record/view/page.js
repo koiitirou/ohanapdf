@@ -45,10 +45,12 @@ function RecordContent() {
   // Handle deep link to specific ID
   useEffect(() => {
     if (targetId && effectiveRoomId) {
-      const loadTarget = async () => {
+      const loadTarget = async (retryCount = 0) => {
         // Don't reset result immediately if we want to show something, but here we want to load fresh
-        setResult(null);
-        setStatus("読み込み中...");
+        if (retryCount === 0) {
+          setResult(null);
+          setStatus("読み込み中...");
+        }
         
         try {
           const res = await fetch("/api/record/history", {
@@ -69,6 +71,12 @@ function RecordContent() {
               setStatus("");
             }
           } else {
+            // If 404, retry a few times (metadata might be slightly delayed)
+            if (res.status === 404 && retryCount < 5) {
+              console.log(`Record not found, retrying... (${retryCount + 1}/5)`);
+              setTimeout(() => loadTarget(retryCount + 1), 2000); // Retry after 2 seconds
+              return;
+            }
             setStatus("指定された記録が見つかりませんでした");
           }
         } catch (error) {
