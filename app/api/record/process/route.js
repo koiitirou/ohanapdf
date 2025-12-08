@@ -22,7 +22,9 @@ async function setupCredentials() {
 
 export async function POST(request) {
   try {
-    const { gcsUris, roomId, prompt, batchId } = await request.json();
+    const body = await request.json();
+    console.log("[Process API] Received body:", JSON.stringify(body));
+    const { gcsUris, roomId, prompt, batchId } = body;
 
     if (!gcsUris || !Array.isArray(gcsUris) || gcsUris.length === 0) {
       return NextResponse.json({ error: "GCS URIs are required" }, { status: 400 });

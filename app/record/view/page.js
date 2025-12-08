@@ -79,11 +79,11 @@ function RecordContent() {
               setTimeout(() => loadTarget(retryCount + 1), 2000); // Retry after 2 seconds
               return;
             }
-            setStatus("指定された記録が見つかりませんでした");
+            setStatus(`指定された記録が見つかりませんでした (Room: ${effectiveRoomId}, ID: ${targetId})`);
           }
         } catch (error) {
           console.error(error);
-          setStatus("エラーが発生しました");
+          setStatus(`エラーが発生しました: ${error.message}`);
         }
       };
       loadTarget();
