@@ -33,12 +33,52 @@ function RecordContent() {
 
   const fileInputRef = useRef(null);
 
+  const targetId = searchParams.get("id");
+
   // Fetch history on mount (if not guest)
   useEffect(() => {
     if (!isGuest && roomId) {
       fetchHistory();
     }
   }, [roomId, isGuest]);
+
+  // Handle deep link to specific ID
+  useEffect(() => {
+    if (targetId && effectiveRoomId) {
+      const loadTarget = async () => {
+        // Don't reset result immediately if we want to show something, but here we want to load fresh
+        setResult(null);
+        setStatus("読み込み中...");
+        
+        try {
+          const res = await fetch("/api/record/history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomId: effectiveRoomId, id: targetId }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            setResult(data);
+            
+            if (data.status === "processing") {
+              setProcessing(true);
+              setPollingId(targetId);
+              setStatus("AIが音声を解析中です... (数分かかる場合があります)");
+            } else {
+              setStatus("");
+            }
+          } else {
+            setStatus("指定された記録が見つかりませんでした");
+          }
+        } catch (error) {
+          console.error(error);
+          setStatus("エラーが発生しました");
+        }
+      };
+      loadTarget();
+    }
+  }, [targetId, effectiveRoomId]);
 
   // Polling effect
   useEffect(() => {
