@@ -49,7 +49,9 @@ function RecordContent() {
         // Don't reset result immediately if we want to show something, but here we want to load fresh
         if (retryCount === 0) {
           setResult(null);
-          setStatus("読み込み中...");
+          // Show processing state immediately to give feedback
+          setProcessing(true);
+          setStatus("AIが音声を解析中です... (数分かかる場合があります)");
         }
         
         try {
