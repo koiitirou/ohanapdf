@@ -69,6 +69,37 @@ function RecordContent() {
               setProcessing(true);
               setPollingId(targetId);
               setStatus("AIが音声を解析中です... (数分かかる場合があります)");
+            } else if (data.status === "uploaded") {
+              // Auto-trigger processing if just uploaded
+              setStatus("AI処理を開始しています...");
+              setProcessing(true);
+              
+              // Trigger process API
+              fetch("/api/record/process", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  roomId: effectiveRoomId,
+                  batchId: targetId
+                  // gcsUris are already in metadata, so we don't need to send them
+                }),
+              })
+              .then(res => res.json())
+              .then(processData => {
+                if (processData.status === "processing") {
+                  setPollingId(targetId);
+                  setStatus("AIが音声を解析中です... (数分かかる場合があります)");
+                } else {
+                  setStatus("処理開始に失敗しました");
+                  setProcessing(false);
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                setStatus("処理開始エラー");
+                setProcessing(false);
+              });
+
             } else {
               setStatus("");
             }
@@ -113,7 +144,7 @@ function RecordContent() {
             } else if (data.status === "error") {
               setProcessing(false);
               setPollingId(null);
-              setStatus("エラーが発生しました");
+              setStatus(data.summary || "エラーが発生しました");
             }
           }
         } catch (error) {

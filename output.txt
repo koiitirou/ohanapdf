@@ -1,0 +1,31 @@
+(node:57397) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Creds start with: '{
+After strip: '{
+Testing model: gemini-2.5-pro
+Error testing model:
+GoogleAuthError: [VertexAI.GoogleAuthError]: 
+Unable to authenticate your request        
+Depending on your run time environment, you can get authentication by        
+- if in local instance or cloud shell: `!gcloud auth login`        
+- if in Colab:        
+    -`from google.colab import auth`        
+    -`auth.authenticate_user()`        
+- if in service account or other: please follow guidance in https://cloud.google.com/docs/authentication
+    at /Users/yusuke/nextjs/ohanapdf/node_modules/@google-cloud/vertexai/build/src/models/generative_models.js:63:19
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async generateContent (/Users/yusuke/nextjs/ohanapdf/node_modules/@google-cloud/vertexai/build/src/functions/generate_content.js:51:16)
+    at async testModel (/Users/yusuke/nextjs/ohanapdf/test_model.js:45:20) {
+  stackTrace: SyntaxError: Unexpected token ''', "'{" is not valid JSON
+      at JSON.parse (<anonymous>)
+      at ReadStream.<anonymous> (/Users/yusuke/nextjs/ohanapdf/node_modules/google-auth-library/build/src/auth/googleauth.js:511:43)
+      at ReadStream.emit (node:events:524:28)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21),
+  [cause]: SyntaxError: Unexpected token ''', "'{" is not valid JSON
+      at JSON.parse (<anonymous>)
+      at ReadStream.<anonymous> (/Users/yusuke/nextjs/ohanapdf/node_modules/google-auth-library/build/src/auth/googleauth.js:511:43)
+      at ReadStream.emit (node:events:524:28)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+}

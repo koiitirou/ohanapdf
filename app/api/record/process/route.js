@@ -26,10 +26,6 @@ export async function POST(request) {
     console.log("[Process API] Received body:", JSON.stringify(body));
     const { gcsUris, roomId, prompt, batchId } = body;
 
-    if (!gcsUris || !Array.isArray(gcsUris) || gcsUris.length === 0) {
-      return NextResponse.json({ error: "GCS URIs are required" }, { status: 400 });
-    }
-
     const id = batchId || Date.now().toString();
     const storage = getGCSClient();
     const bucket = storage.bucket("ohpdf");
@@ -38,15 +34,34 @@ export async function POST(request) {
     const effectiveRoomId = roomId || "guest";
     const metadataPath = `record/metadata/${effectiveRoomId}/${id}.json`;
 
+    let currentMetadata = {};
+    let targetGcsUris = gcsUris;
+
+    // If gcsUris not provided, try to read from existing metadata
+    if ((!targetGcsUris || targetGcsUris.length === 0) && metadataPath) {
+      const metadataFile = bucket.file(metadataPath);
+      const [exists] = await metadataFile.exists();
+      if (exists) {
+        const [content] = await metadataFile.download();
+        currentMetadata = JSON.parse(content.toString());
+        targetGcsUris = currentMetadata.gcsUris;
+      }
+    }
+
+    if (!targetGcsUris || !Array.isArray(targetGcsUris) || targetGcsUris.length === 0) {
+      return NextResponse.json({ error: "GCS URIs are required and could not be found in metadata" }, { status: 400 });
+    }
+
     const initialMetadata = {
       id,
       roomId,
       timestamp: Date.now(),
-      gcsUris,
+      gcsUris: targetGcsUris,
       summary: "処理中...",
       transcription: "",
       correctedSummary: "",
-      status: "processing"
+      status: "processing",
+      ...currentMetadata // Keep existing fields if any
     };
 
     if (metadataPath) {
@@ -78,8 +93,9 @@ export async function POST(request) {
         });
 
         // Prepare parts for all files
+        // Prepare parts for all files
         const parts = [];
-        for (const uri of gcsUris) {
+        for (const uri of targetGcsUris) {
           parts.push({
             fileData: {
               fileUri: uri,
@@ -124,15 +140,17 @@ export async function POST(request) {
       } catch (error) {
         console.error(`[Record] Error processing ${id}:`, error);
         if (metadataPath) {
-             const metadataFile = bucket.file(metadataPath);
-             const errorMetadata = {
-                ...initialMetadata,
-                summary: "処理中にエラーが発生しました",
-                status: "error"
-             };
-             await metadataFile.save(JSON.stringify(errorMetadata), {
-                contentType: "application/json",
-             });
+          // Update metadata to show error
+          const errorMetadata = {
+            ...initialMetadata,
+            summary: `処理中にエラーが発生しました: ${error.message}`,
+            status: "error",
+            errorDetail: error.message
+          };
+          const metadataFile = bucket.file(metadataPath);
+          await metadataFile.save(JSON.stringify(errorMetadata), {
+            contentType: "application/json",
+          });
         }
       } finally {
         if (tempCredFilePath) {

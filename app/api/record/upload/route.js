@@ -53,6 +53,24 @@ export async function POST(request) {
       });
     }
 
+    // Save initial metadata
+    const metadataPath = `record/metadata/${roomId}/${batchId}.json`;
+    const metadata = {
+      id: batchId,
+      roomId,
+      timestamp: Date.now(),
+      gcsUris: uploadedFiles.map(f => f.gcsUri),
+      summary: "アップロード完了",
+      transcription: "",
+      correctedSummary: "",
+      status: "uploaded"
+    };
+
+    const metadataFile = bucket.file(metadataPath);
+    await metadataFile.save(JSON.stringify(metadata), {
+      contentType: "application/json",
+    });
+
     return NextResponse.json(
       {
         message: "Upload successful",
