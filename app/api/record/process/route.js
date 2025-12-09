@@ -24,7 +24,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     console.log("[Process API] Received body:", JSON.stringify(body));
-    const { gcsUris, roomId, prompt, batchId } = body;
+    const { gcsUris, roomId, prompt, batchId, model } = body;
 
     const id = batchId || Date.now().toString();
     const storage = getGCSClient();
@@ -83,7 +83,7 @@ export async function POST(request) {
         });
 
         const generativeModel = vertex_ai.getGenerativeModel({
-          model: "gemini-2.5-pro",
+          model: model || "gemini-1.5-pro-001",
           generationConfig: {
             maxOutputTokens: 16384,
             temperature: 0.2,

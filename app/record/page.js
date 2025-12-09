@@ -12,10 +12,7 @@ export default function RecordLanding() {
 
   const handleConnect = async (e) => {
     e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      setError("6桁の番号を入力してください");
-      return;
-    }
+    if (otp.length !== 4) return;
 
     setLoading(true);
     setError("");
@@ -24,18 +21,18 @@ export default function RecordLanding() {
       const res = await fetch("/api/record/pair", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "verify", otp }),
+        body: JSON.stringify({ otp }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "接続に失敗しました");
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/record/view?room=${data.roomId}`);
+      } else {
+        const data = await res.json();
+        setError(data.error || "接続に失敗しました");
       }
-
-      router.push(`/record/view?room=${data.roomId}`);
     } catch (err) {
-      setError(err.message);
+      setError("エラーが発生しました");
     } finally {
       setLoading(false);
     }
@@ -47,42 +44,49 @@ export default function RecordLanding() {
 
   return (
     <div className={styles.container}>
-      <main className={`${styles.main} ${styles.landingCard}`}>
+      <main className={styles.main}>
         <div className={styles.header}>
-          <h1 className={styles.title}>録音要約</h1>
+          <h1 className={styles.title}>Ohana Record</h1>
           <p className={styles.subtitle}>PCで録音結果を確認する</p>
         </div>
 
         <form onSubmit={handleConnect}>
-          <div className={styles.otpInputGroup}>
-            <label className={styles.otpLabel}>ワンタイムID (6桁)</label>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>ワンタイムID (4桁)</label>
             <input
               type="text"
               inputMode="numeric"
               pattern="\d*"
-              maxLength={6}
+              maxLength={4}
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
               className={styles.otpInput}
-              placeholder="000000"
-              autoFocus
+              placeholder="0000"
+              autoComplete="one-time-code"
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+          {error && <p className={styles.errorText}>{error}</p>}
 
           <button
             type="submit"
-            disabled={loading || otp.length !== 6}
-            className={styles.primaryButton}
+            disabled={loading || otp.length !== 4}
+            className={styles.submitButton}
           >
             {loading ? "接続中..." : "接続する"}
           </button>
         </form>
 
-        <div className={styles.divider}>または</div>
+        <div className={styles.divider}>
+          <div className={styles.dividerLine}></div>
+          <span className={styles.dividerText}>または</span>
+          <div className={styles.dividerLine}></div>
+        </div>
 
-        <button onClick={handleGuest} className={styles.guestButton}>
+        <button 
+          onClick={handleGuest} 
+          className={styles.guestButton}
+        >
           ゲストとして利用 (履歴なし)
         </button>
       </main>
